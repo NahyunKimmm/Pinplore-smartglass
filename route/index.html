@@ -61,15 +61,15 @@ img{display:block}
     <div id="right" class="abs glass">
       <img id="t5" class="pos" src="assets/title5.png" style="left:7px;top:12px;width:291px" alt="">
       <img id="t6" class="pos" src="assets/title6.png" style="left:7px;top:12px;width:292px;opacity:0" alt="">
-      <img class="pos" src="assets/navBtn.png" style="left:481px;top:7px;width:137px" alt="">
+      <img id="nb" class="pos" src="assets/navBtn.png" style="left:481px;top:7px;width:137px;transform-origin:50% 50%" alt="">
       <img id="map" class="pos" src="assets/map.png" alt="">
       <svg id="routeSvg" viewBox="0 0 625 286">
-        <defs><mask id="pinHoles" maskUnits="userSpaceOnUse" x="-20" y="-20" width="665" height="326"><rect x="-20" y="-20" width="665" height="326" fill="#fff"/><circle cx="69" cy="85" r="21" fill="#000"/><circle cx="412.7" cy="25.3" r="18.5" fill="#000"/><circle cx="552.7" cy="75.7" r="18.5" fill="#000"/><circle cx="202.7" cy="128.7" r="18.5" fill="#000"/><circle cx="178.7" cy="204" r="18.5" fill="#000"/><circle cx="319.3" cy="260" r="18.5" fill="#000"/><circle cx="234" cy="25" r="18.5" fill="#000"/></mask><filter id="glow" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <defs><mask id="pinHoles" maskUnits="userSpaceOnUse" x="-20" y="-20" width="665" height="326"><rect x="-20" y="-20" width="665" height="326" fill="#fff"/><circle cx="69" cy="85" r="15" fill="#000"/><circle cx="412.7" cy="25.3" r="12.5" fill="#000"/><circle cx="552.7" cy="75.7" r="12.5" fill="#000"/><circle cx="202.7" cy="128.7" r="12.5" fill="#000"/><circle cx="178.7" cy="204" r="12.5" fill="#000"/><circle cx="319.3" cy="260" r="12.5" fill="#000"/><circle cx="234" cy="25" r="15.5" fill="#000"/></mask><filter id="glow" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
         <g mask="url(#pinHoles)"><g transform="translate(80.42 15.18)" filter="url(#glow)"><path id="r0" d="M7.60852 71.5523L111.572 104.465C118.634 106.701 122.418 114.362 119.902 121.328L100.441 175.207C98.0589 181.8 101.316 189.097 107.816 191.726L227.153 239.999C233.96 242.752 241.698 239.345 244.262 232.465L324.92 16.0965C327.425 9.37846 334.883 5.9421 341.617 8.40347L467.337 54.3564" stroke="#fff" stroke-width="5.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
         <g transform="translate(60.86 4.24)" filter="url(#glow)"><path id="r1" pathLength="1" d="M7.60852 77.2068L52.012 90.1928C55.8041 91.3018 59.8946 90.6318 63.1348 88.3709L178.108 8.14727C180.387 6.55703 183.363 8.83216 182.426 11.4486L144.073 118.574L120 185.219C117.619 191.813 120.876 199.109 127.375 201.738L246.713 250.011C253.52 252.765 261.257 249.358 263.822 242.477L344.48 26.1088C346.985 19.3908 354.443 15.9544 361.177 18.4158L486.897 64.3688" stroke="#fff" stroke-width="5.7" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="0 1"/></g></g>
       </svg>
       <img class="pos" src="assets/pins.png" style="left:0;top:65px;width:625px" alt="">
-      <img id="newPin" class="pos" src="assets/newPin.png" style="left:203px;top:59px;width:76.7px;opacity:0" alt="">
+      <img id="newPin" class="pos" src="assets/newPin.png" style="left:195.6px;top:51.6px;width:76.7px;opacity:0" alt="">
       <div id="tl"><i></i><b style="top:0">1</b><b id="tl2" style="top:225px">2</b></div>
       <img id="oldList" class="pos" src="assets/oldList.png" style="left:45px;top:369px;width:565px" alt="">
       <img id="newCard" class="pos" src="assets/newCard.png" style="left:45px;top:367px;width:565px;opacity:0" alt="">
@@ -77,6 +77,17 @@ img{display:block}
     <img id="fly" class="abs" src="assets/card0.png" alt="" style="opacity:0">
   </div>
 
+  <div id="sceneC" style="position:absolute;inset:0;opacity:0;visibility:hidden">
+    <img src="assets/bg_sharp.jpg" class="abs" style="width:1210px;height:834px" alt="">
+    <div id="floorWrap" style="position:absolute;left:473px;top:543px;width:264px;height:245px;mix-blend-mode:screen">
+      <img src="assets/floor.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="">
+    </div>
+    <div style="position:absolute;left:469px;top:31px;width:63px;height:63px;border-radius:999px;background:rgba(0,0,0,.3);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)"></div>
+    <img src="assets/head3.png" class="abs" style="left:469px;top:31px;width:63px;height:63px" alt="">
+    <div id="pillC" style="position:absolute;left:542px;top:31px;height:63px;padding:0 24px 0 14px;display:flex;align-items:center;gap:8px;border-radius:999px;background:rgba(0,0,0,.3);
+      backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);box-shadow:inset 0 0 0 .7px rgba(255,255,255,.15);font:600 19px/1 Montserrat,system-ui,sans-serif;color:#fff;white-space:nowrap">
+      <img src="assets/pillIcon.png" style="width:28px;height:44px;object-fit:contain" alt="">Ceramic Face Wall<span style="font-weight:500;opacity:.7;margin-left:6px">2 min</span></div>
+  </div>
   <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
   <div id="tap" class="abs touch"></div>
   <div id="drag" class="abs touch"></div>
@@ -102,7 +113,9 @@ const A={in:[0,.5], tap:4.15, out:[4.45,4.9]};
 /* ---- scene B: drag a pin card into the route (Figma motion, 6s, offset by B0) ---- */
 const B0=4.6;
 const B={in:[0,.45], hold:1.07, fly:[1.39,2.35], land:2.42, listUp:[1.51,1.77], shift:[1.85,2.4], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
-const DUR=B0+B.end;
+const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
+const C={tap:0, out:[.25,.7], in:[.55,1.15], end:4.4};
+const DUR=C0+C.end;
 const LIST=[0,266,393,613], CARD_FROM={x:158,y:196}, CARD_TO={x:537,y:502};
 
 function apply(t){
@@ -135,10 +148,19 @@ function apply(t){
   const ti=eio(prog(tb,...B.title)); $('t5').style.opacity=1-ti; $('t6').style.opacity=ti;
   const pk=prog(tb,...B.pin); $('newPin').style.opacity=clamp(pk*1.6); $('newPin').style.transform=`scale(${pk<=0?0.6:pk<.6?lerp(.6,1.12,pk/.6):lerp(1.12,1,(pk-.6)/.4)})`;
 
+  /* scene C: navigation to the first pin on the route */
+  const tc=t-C0, cOut=eio(prog(tc,...C.out)), cIn=eout(prog(tc,...C.in));
+  if(tc>0){ $('sceneB').style.opacity=bIn*(1-cOut); }
+  const head=1-cOut; $('headS').style.opacity=head; $('head').style.opacity=head;
+  $('sceneC').style.opacity=cIn; $('sceneC').style.visibility=cIn>0?'visible':'hidden';
+  $('floorWrap').style.transform=`translateY(${(1-cIn)*14}px)`;
+  $('nb').style.transform=`scale(${1-.04*Math.sin(Math.PI*prog(tc,C.tap,C.tap+.3))})`;
+
   /* touch indicators (only during actions) */
   const tp=$('tap'),dg=$('drag'); tp.style.opacity=0; dg.style.opacity=0;
   for(const [a,b] of STEPS){ if(t>=a-.15&&t<b+.2){const k=eio(prog(t,a,b)); dg.style.opacity=prog(t,a-.15,a)*(1-prog(t,b,b+.2)); tr(dg,lerp(760,520,k),402);} }
   const q=prog(t,A.tap,A.tap+.45); if(t>=A.tap&&q<1){tp.style.opacity=1-q;tr(tp,604,676,` scale(${.5+.7*q})`)}
+  {const q=prog(t,C0,C0+.45); if(t>=C0&&q<1){tp.style.opacity=1-q;tr(tp,483+549,123+37,` scale(${.5+.7*q})`)}}
   if(tb>=B.hold-.1&&tb<B.land+.25){dg.style.opacity=prog(tb,B.hold-.1,B.hold)*(1-prog(tb,B.land,B.land+.25)); tr(dg,fx+150,fy+120);}
 }
 function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
