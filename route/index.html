@@ -19,7 +19,7 @@ img{display:block}
 
 /* scene A: themes */
 #sceneA{position:absolute;inset:0}
-#row{position:absolute;left:430px;top:262px}
+#row{position:absolute;left:0;top:0}
 .theme{position:absolute;width:281px;height:281px;transform-origin:50% 50%}
 .theme img{position:absolute;inset:0;width:100%;height:100%;border-radius:inherit}
 #create{left:367px;top:650px;width:475px;height:53px;border-radius:32.6px;background:rgba(255,255,255,.8);
@@ -155,7 +155,8 @@ const tr=(el,x,y,extra='')=>{el.style.transform=`translate(${x}px,${y}px)${extra
 /* ---- scene A: theme carousel (Figma motion: row -17 → -343 → -637 → -969, focus card scales up) ---- */
 const THEME_X=[0,371,686,1000,1315,1630], ROW=[-17,-343,-637,-969];
 const STEPS=[[0.9,1.65],[1.85,2.6],[2.8,3.55]];
-const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left=(x+(i===0?28:0))+'px';d.style.top='1px';
+const CARD=281, CAR_GAP=34;   // Figma: 281px cards, 34px apart
+const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left='0px';d.style.top='263px';
   const im=document.createElement('img');im.src=`assets/theme${i}.png`;d.appendChild(im);$('row').appendChild(d);return d});
 const A={in:[0,.5], tap:4.15, out:[4.45,4.85]};
 
@@ -163,7 +164,7 @@ const A={in:[0,.5], tap:4.15, out:[4.45,4.85]};
 /* ---- scene L: the chosen theme folds into a glass card while the route is built ---- */
 const L0=4.5;
 const L={fly:[0,.75], cardIn:[.25,.8], steps:[[.6,1.35],[1.35,2.0],[2.0,2.75]], draw:[.7,2.75], out:[3.0,3.45]};
-const PICK_FROM={x:435.7,y:237.7,w:331.6}, PICK_TO={x:375+26,y:197+26,w:76};
+const PICK_FROM={x:605-165.8,y:403.5-165.8,w:331.6}, PICK_TO={x:375+26,y:197+26,w:76};
 const B0=L0+3.25;
 /* where each mini-map pin sits along the drawn path (0..1), so it pops exactly when the line arrives */
 let PF=[0,.25,.5,.75,1];
@@ -181,9 +182,12 @@ function apply(t){
   const aIn=eout(prog(t,...A.in)), aOut=prog(t,...A.out);
   $('sceneA').style.opacity=aIn*(1-aOut); $('sceneA').style.visibility=aOut<1?'visible':'hidden';
   let f=0; STEPS.forEach(([a,b])=>{f+=eio(prog(t,a,b))});
-  const fi=Math.floor(f), fk=f-fi; const rowX=lerp(ROW[Math.min(fi,3)],ROW[Math.min(fi+1,3)],fk);
-  tr($('row'),rowX,0);
-  themes.forEach((d,i)=>{const near=clamp(1-Math.abs(i-f));d.style.transform=`scale(${1+.18*near})`;d.style.opacity=.5+.5*near;d.style.zIndex=Math.round(near*10)});
+  /* focused card always sits at the screen centre; every gap between visible card edges stays CAR_GAP */
+  const sc=themes.map((d,i)=>1+.18*clamp(1-Math.abs(i-f)));
+  const cx=[0]; for(let i=1;i<themes.length;i++) cx.push(cx[i-1]+CARD*sc[i-1]/2+CAR_GAP+CARD*sc[i]/2);
+  const fi=Math.min(Math.floor(f),themes.length-2), fk=f-fi, off=605-lerp(cx[fi],cx[fi+1],fk);
+  themes.forEach((d,i)=>{const near=clamp(1-Math.abs(i-f));
+    d.style.transform=`translate(${off+cx[i]-CARD/2}px,0) scale(${sc[i]})`;d.style.opacity=.5+.5*near;d.style.zIndex=Math.round(near*10)});
   $('create').style.transform=`scale(${1-.03*Math.sin(Math.PI*prog(t,A.tap,A.tap+.3))})`;
 
   /* scene L */
