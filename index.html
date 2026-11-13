@@ -7,111 +7,139 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-</head>
-<body style="margin:0">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Manrope:wght@400;500;600&display=swap">
 <style>
-/* Full-bleed kiosk for iPad Pro 11" landscape (1210×834): each flow fills the screen, controls appear on tap. */
+</head>
+<body style="margin:0">
+/* One continuous glass session on iPad Pro 11" landscape (1210×834):
+   a persistent AR head bar drives the flows; scenes hand off with a focus pull instead of a cut. */
 :root{
   --bg:#000; --glass:rgba(16,18,22,.62); --line:rgba(255,255,255,.14);
   --fg:#f4f6f8; --muted:rgba(244,246,248,.6); --pin-a:#6cee52; --pin-b:#e8f000;
-  --display:"Montserrat",system-ui,sans-serif; --body:"Manrope",system-ui,sans-serif;
+  --body:"Manrope",system-ui,sans-serif;
   color-scheme:dark;
 }
 html,body{height:100%}
-body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden;
-  padding-left:max(0px,env(safe-area-inset-left,0px));padding-right:max(0px,env(safe-area-inset-right,0px))}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden}
 .screen{position:fixed;inset:0;background:var(--bg)}
-.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;transition:opacity .5s ease}
-.screen iframe.on{opacity:1}
-.tabs{position:fixed;z-index:3;display:flex}
-.tabs button{all:unset;cursor:pointer;flex:1;height:100%;border-radius:999px}
-.tabs button:focus-visible{outline:2px solid var(--pin-a)}
-.progress{position:fixed;left:0;right:0;bottom:0;height:3px;z-index:4;pointer-events:none}
-.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pin-a),var(--pin-b));opacity:.0;transition:opacity .3s}
-.show-ui .progress i{opacity:1}
+.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;will-change:transform,filter,opacity}
 
+/* persistent head bar, laid over the flow at its Figma spot (496,31 · 219×64 in the 1210×834 frame) */
+#hud{position:fixed;left:0;top:0;width:1210px;height:834px;transform-origin:0 0;pointer-events:none;z-index:6}
+.head{position:absolute;left:496px;top:31px;width:219px;height:64px;border-radius:999px;background:rgba(0,0,0,.3);
+  backdrop-filter:blur(5.2px);-webkit-backdrop-filter:blur(5.2px);box-shadow:0 4px 21px rgba(0,0,0,.1);pointer-events:auto;transition:opacity .45s ease}
+.head .knob{position:absolute;top:6.2px;left:6.2px;width:51.65px;height:51.65px;border-radius:999px;background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .55s cubic-bezier(.34,1.35,.5,1)}
+.head button{all:unset;cursor:pointer;position:absolute;top:6.2px;width:51.65px;height:51.65px;border-radius:999px}
+.head button:focus-visible{outline:2px solid var(--pin-a)}
+.head button img{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;transition:opacity .35s ease}
+.head button .a{opacity:0}
+.head button[aria-current="true"] .a{opacity:1}
+.head button[aria-current="true"] .i{opacity:0}
+
+.progress{position:fixed;left:0;right:0;bottom:0;height:3px;z-index:4;pointer-events:none}
+.progress i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pin-a),var(--pin-b));opacity:0;transition:opacity .3s}
+.show-ui .progress i{opacity:1}
 .ui{position:fixed;left:0;right:0;bottom:0;z-index:5;display:flex;justify-content:center;
   padding:0 max(16px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));
   opacity:0;transform:translateY(12px);transition:opacity .3s,transform .3s;pointer-events:none}
 .show-ui .ui{opacity:1;transform:none;pointer-events:auto}
 .bar{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--glass);
-  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);box-shadow:inset 0 0 0 1px var(--line),0 10px 30px rgba(0,0,0,.35);max-width:100%;overflow-x:auto}
-.bar button{all:unset;cursor:pointer;white-space:nowrap;font:600 14px/1 var(--body);color:var(--muted);padding:12px 16px;border-radius:999px}
-.bar button[aria-current="true"]{background:var(--fg);color:#111}
+  backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);box-shadow:inset 0 0 0 1px var(--line),0 10px 30px rgba(0,0,0,.35)}
+.bar button{all:unset;cursor:pointer;white-space:nowrap;font:600 14px/1 var(--body);color:var(--fg);padding:12px 16px;border-radius:999px}
 .bar button:focus-visible{outline:2px solid var(--pin-a);outline-offset:1px}
-.bar .sep{width:1px;height:22px;background:var(--line);flex:none}
-.bar .ctl{color:var(--fg)}
-@media (prefers-reduced-motion:reduce){.screen iframe,.ui{transition:none}}
+@media (prefers-reduced-motion:reduce){.head .knob,.head button img{transition:none}}
 </style>
 
 <div class="screen" id="screen">
   <iframe id="fa" title="Prototype"></iframe>
   <iframe id="fb" title="Prototype"></iframe>
 </div>
-<div class="tabs" id="tabs" aria-label="Flows">
-  <button type="button" data-flow="2" aria-label="Explore"></button>
-  <button type="button" data-flow="0" aria-label="Drop a Pin"></button>
-  <button type="button" data-flow="3" aria-label="Create route"></button>
-  <button type="button" data-flow="1" aria-label="Collection and navigation"></button>
-</div>
-<div class="progress"><i id="prog"></i></div>
-<div class="ui" id="ui">
-  <div class="bar" id="bar">
-    <span id="flows" style="display:contents"></span>
-    <span class="sep"></span>
-    <button class="ctl" id="pause" type="button">Pause</button>
-    <button class="ctl" id="full" type="button">Full screen</button>
+<div id="hud">
+  <div class="head" id="head">
+    <span class="knob" id="knob"></span>
+    <button type="button" data-tab="0" aria-label="Explore"><img class="i" src="shell/ic0.png" alt=""><img class="a" src="shell/ic0a.png" alt=""></button>
+    <button type="button" data-tab="1" aria-label="Drop a Pin"><img class="i" src="shell/ic1.png" alt=""><img class="a" src="shell/ic1a.png" alt=""></button>
+    <button type="button" data-tab="2" aria-label="Create route"><img class="i" src="shell/ic2.png" alt=""><img class="a" src="shell/ic2a.png" alt=""></button>
+    <button type="button" data-tab="3" aria-label="Collection and navigation"><img class="i" src="shell/ic3.png" alt=""><img class="a" src="shell/ic3a.png" alt=""></button>
   </div>
 </div>
+<div class="progress"><i id="prog"></i></div>
+<div class="ui"><div class="bar">
+  <button id="pause" type="button">Pause</button>
+  <button id="full" type="button">Full screen</button>
+</div></div>
 
 <script>
+/* tab order follows the head bar: Explore · Pin · Route · Collection */
 const FLOWS=[
-  {src:'pin/index.html',t:'Drop a Pin',dur:13.6},
-  {src:'nav/index.html',t:'Navigation',dur:8.6},
-  {src:'explore/index.html',t:'Explore',dur:9.4},
-  {src:'route/index.html',t:'Create route',dur:14},
+  {src:'explore/index.html',dur:9.4},
+  {src:'pin/index.html',dur:13.6},
+  {src:'route/index.html',dur:14},
+  {src:'nav/index.html',dur:8.6},
 ];
-const HOLD=1.6, LEAD=.6;
+const HOLD=1.4, OUT=.55, IN=.75;
 const $=id=>document.getElementById(id);
-const frames=[$('fa'),$('fb')]; let front=0, idx=0, paused=false, timer=null, t0=0, total=1, raf=0, uiT=0;
+const frames=[$('fa'),$('fb')]; let front=-1, idx=0, paused=false, timer=null, t0=0, total=1, uiT=0, swapT=0;
+const tabs=[...document.querySelectorAll('.head button')];
+tabs.forEach((b,i)=>{b.style.left=(6.2+51.65*i)+'px';b.onclick=e=>{e.stopPropagation();go(i,true);showUI()}});
 
-const btns=FLOWS.map((f,i)=>{const b=document.createElement('button');b.type='button';b.textContent=f.t;
-  b.onclick=e=>{e.stopPropagation();go(i,true);showUI()};$('flows').appendChild(b);return b});
+function placeHud(){const k=Math.min(innerWidth/1210,innerHeight/834),ox=(innerWidth-1210*k)/2,oy=(innerHeight-834*k)/2;
+  $('hud').style.transform=`translate(${ox}px,${oy}px) scale(${k})`}
+addEventListener('resize',placeHud);placeHud();
+
+function setTab(i){tabs.forEach((b,j)=>b.setAttribute('aria-current',j===i));
+  $('knob').style.transform=`translateX(${51.65*i}px)`;}
+
+/* scene handoff: the outgoing view loses focus and drifts back, the next one pulls into focus */
+const ease='cubic-bezier(.4,0,.2,1)';
+function leave(f){f.style.transition=`transform ${OUT}s ${ease}, filter ${OUT}s ${ease}`;
+  f.style.transform='scale(1.04)';f.style.filter='blur(14px)';f.style.zIndex=1;
+  setTimeout(()=>{if(frames[front]!==f){f.style.transition='none';f.style.opacity=0}},(IN+.1)*1000)}
+function enter(f){f.style.transition='none';f.style.opacity=0;f.style.transform='scale(.97)';f.style.filter='blur(14px)';f.style.zIndex=2;
+  f.getBoundingClientRect();
+  f.style.transition=`opacity ${IN}s ${ease}, transform ${IN}s ${ease}, filter ${IN}s ${ease}`;
+  f.style.opacity=1;f.style.transform='none';f.style.filter='none'}
+
+function embed(f){try{const d=f.contentDocument,s=d.createElement('style');
+  s.textContent='#head,#headS,#headA,#headAimg{visibility:hidden!important}';d.head.appendChild(s);
+  d.addEventListener('pointerdown',()=>{showUI();wake()})}catch(e){}}
 
 function go(i,user){
-  idx=(i+FLOWS.length)%FLOWS.length; const f=FLOWS[idx];
-  btns.forEach((b,j)=>b.setAttribute('aria-current',j===idx));
+  idx=(i+FLOWS.length)%FLOWS.length; const f=FLOWS[idx]; setTab(idx);
   if(user&&paused){paused=false;$('pause').textContent='Pause'}
-  const back=frames[1-front];
-  back.onload=()=>{
-    frames[front].classList.remove('on'); back.classList.add('on'); front=1-front;
-    let d=f.dur; try{d=back.contentWindow.__DUR||d}catch(e){}
-    total=LEAD+d+HOLD; t0=performance.now(); clearTimeout(timer);
+  clearTimeout(timer);
+  const next=frames[front<0?0:1-front], prev=front<0?null:frames[front];
+  next.onload=()=>{
+    embed(next);
+    if(prev) leave(prev);
+    clearTimeout(swapT); swapT=setTimeout(()=>enter(next), prev?120:0);
+    front=frames.indexOf(next);
+    let d=f.dur; try{d=next.contentWindow.__DUR||d}catch(e){}
+    total=d+HOLD+.3; t0=performance.now();
     if(!paused) timer=setTimeout(()=>go(idx+1),total*1000);
-    cancelAnimationFrame(raf); tick();
   };
-  back.src=f.src+'#'+Date.now();
+  next.src=f.src+'#'+Date.now();
 }
-/* place the header hit areas over the AR head bar (496,31 · 219×64 in the 1210×834 flow) */
-function placeTabs(){const k=Math.min(innerWidth/1210,innerHeight/834),ox=(innerWidth-1210*k)/2,oy=(innerHeight-834*k)/2,t=$('tabs').style;
-  t.left=(ox+(496+6.5)*k)+'px';t.top=(oy+(31+6.5)*k)+'px';t.width=((219-13)*k)+'px';t.height=((64-13)*k)+'px';}
-addEventListener('resize',placeTabs);placeTabs();
-document.querySelectorAll('#tabs button').forEach(b=>b.onclick=e=>{e.stopPropagation();go(+b.dataset.flow,true)});
-function tick(){const p=Math.min(1,(performance.now()-t0)/(total*1000));$('prog').style.width=(p*100)+'%';if(p<1&&!paused)raf=requestAnimationFrame(tick)}
+
+/* the head bar follows the flow: it steps aside when a flow hides it (navigation views) */
+function tick(){
+  const p=Math.min(1,(performance.now()-t0)/(total*1000)); $('prog').style.width=(p*100)+'%';
+  let o=1; try{const d=frames[front].contentDocument,h=d.getElementById('head')||d.getElementById('headA');
+    if(h){const v=h.style.opacity; o=v===''?1:+v}}catch(e){}
+  $('head').style.opacity=o; $('head').style.pointerEvents=o>.5?'auto':'none';
+  requestAnimationFrame(tick);
+}
 $('pause').onclick=e=>{e.stopPropagation();paused=!paused;$('pause').textContent=paused?'Play':'Pause';
-  if(paused){clearTimeout(timer);cancelAnimationFrame(raf)}else go(idx);showUI()};
+  if(paused)clearTimeout(timer);else go(idx);showUI()};
 $('full').onclick=async e=>{e.stopPropagation();const el=document.documentElement;
   try{ if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
        else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el) }catch(err){} showUI()};
 function showUI(){document.body.classList.add('show-ui');clearTimeout(uiT);uiT=setTimeout(()=>document.body.classList.remove('show-ui'),3500)}
-/* taps land on the iframe, so listen on its document too */
-function hookTap(fr){fr.addEventListener('load',()=>{try{fr.contentDocument.addEventListener('pointerdown',()=>{showUI();wake()})}catch(e){}})}
-frames.forEach(hookTap);
 document.addEventListener('pointerdown',()=>{showUI();wake()});
 async function wake(){try{await navigator.wakeLock?.request('screen')}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
-wake(); go(0);
+wake(); tick(); go(0);
 </script>
 </body>
 </html>
