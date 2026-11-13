@@ -186,6 +186,13 @@ window.__restart=()=>{playing=false;cancelAnimationFrame(raf);tNow=0;apply(0);pl
 window.__pause=()=>{playing=false;cancelAnimationFrame(raf)};
 window.__resume=()=>{if(!playing&&tNow<DUR)play()};
 window.__t=()=>tNow;
+/* fallback channel when the shell can't reach this frame directly (opened from file://) */
+if(/[?&]embed/.test(location.search)){
+  const st=document.createElement('style');st.textContent='#head,#headS,#headA,#headAimg{visibility:hidden!important}';document.head.appendChild(st);
+  addEventListener('message',e=>{const c=e.data&&e.data.pp;if(c&&typeof window['__'+c]==='function')window['__'+c]()});
+  setInterval(()=>{try{const h=document.getElementById('head')||document.getElementById('headA');
+    parent.postMessage({ppT:tNow,ppDur:DUR,ppReady:!!window.__ready,ppHead:h&&h.style.opacity!==''?+h.style.opacity:1},'*')}catch(e){}},50);
+}
 boot();
 </script>
 </body>

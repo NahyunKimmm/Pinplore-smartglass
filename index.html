@@ -85,9 +85,14 @@ let idx=-1, paused=false, endAt=0, uiT=0, seq=0;
 const frames=FLOWS.map((f,i)=>{const el=document.createElement('iframe');el.title=f.src.split('/')[0];
   el.setAttribute('aria-hidden','true');$('screen').appendChild(el);
   f.ready=new Promise(res=>{el.onload=()=>{embed(el);const w=el.contentWindow;
-    (function wait(){try{if(w.__ready){f.dur=w.__DUR||f.dur;return res()}}catch(e){return res()}setTimeout(wait,30)})()}});
+    (function wait(){try{if(w.__ready){f.dur=w.__DUR||f.dur;return res()}}catch(e){MSG[i].res=res;if(MSG[i].ready)res();return}setTimeout(wait,30)})()}});
   return el});
-const call=(i,k,...a)=>{try{const fn=frames[i].contentWindow[k];return typeof fn==='function'?fn(...a):undefined}catch(e){}};
+const MSG=FLOWS.map(()=>({t:0,head:1,ready:false}));
+addEventListener('message',e=>{const i=frames.findIndex(f=>f.contentWindow===e.source),d=e.data;
+  if(i<0||!d||!('ppT' in d))return; MSG[i].t=d.ppT;MSG[i].head=d.ppHead;if(d.ppDur)FLOWS[i].dur=d.ppDur;if(d.ppReady&&!MSG[i].ready){MSG[i].ready=true;MSG[i].res?.()}});
+/* direct call when same-origin; otherwise fall back to postMessage */
+const call=(i,k,...a)=>{try{const fn=frames[i].contentWindow[k];if(typeof fn==='function')return fn(...a)}catch(e){
+  if(k==='__t')return MSG[i].t; try{frames[i].contentWindow.postMessage({pp:k.slice(2)},'*')}catch(_){} }};
 /* load the first flow first, the rest right after so the opener isn't competing for bandwidth */
 frames[0].src=FLOWS[0].src+'?embed=1';
 FLOWS[0].ready.then(()=>frames.forEach((el,i)=>{if(i)el.src=FLOWS[i].src+'?embed=1'}));
@@ -134,7 +139,7 @@ function tick(){
     $('prog').style.width=Math.min(100,t/f.dur*100)+'%';
     if(!paused&&t>=f.dur){if(!endAt)endAt=performance.now();else if(performance.now()-endAt>HOLD*1000){endAt=0;go(idx+1)}}
     let o=1; try{const d=frames[idx].contentDocument,h=d.getElementById('head')||d.getElementById('headA');
-      if(h){const v=h.style.opacity;o=v===''?1:+v}}catch(e){}
+      if(h){const v=h.style.opacity;o=v===''?1:+v}}catch(e){o=MSG[idx].head}
     $('head').style.opacity=o;$('head').style.pointerEvents=o>.5?'auto':'none';}
   requestAnimationFrame(tick);
 }
