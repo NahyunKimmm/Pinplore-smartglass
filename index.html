@@ -29,7 +29,8 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
 .head .knob{position:absolute;top:6.2px;left:6.2px;width:51.65px;height:51.65px;border-radius:999px;background:#fff;
   box-shadow:0 2px 8px rgba(0,0,0,.15);transition:transform .55s cubic-bezier(.34,1.35,.5,1)}
 .head button{all:unset;cursor:pointer;position:absolute;top:6.2px;width:51.65px;height:51.65px;border-radius:999px}
-.head button:focus-visible{outline:2px solid var(--pin-a)}
+.head button{-webkit-tap-highlight-color:transparent}
+.head button:focus,.head button:focus-visible{outline:none}
 .head button img{position:absolute;left:50%;top:50%;width:30px;height:30px;margin:-15px 0 0 -15px;transition:opacity .35s ease}
 .head button .a{opacity:0}
 .head button[aria-current="true"] .a{opacity:1}

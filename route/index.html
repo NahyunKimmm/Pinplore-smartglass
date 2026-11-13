@@ -49,7 +49,7 @@ img{display:block}
 #lcard .hd{position:absolute;left:116px;top:36px}
 #lcard .tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.14);
   font:600 12px/1 Manrope,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.85)}
-#lcard .tag i{width:6px;height:6px;border-radius:999px;background:linear-gradient(45deg,#6cee52,#e8f000)}
+#lcard .tag i{width:6px;height:6px;border-radius:999px;background:#fff}
 #lcard h2{margin-top:9px;font:700 23px/1.15 Montserrat,sans-serif;letter-spacing:-.3px;color:#fff;white-space:nowrap}
 #lcard h2 span{display:inline-block;width:24px;text-align:left}
 #steps{position:absolute;left:28px;top:128px;width:404px}
@@ -57,12 +57,25 @@ img{display:block}
 .st .ic{position:relative;width:20px;height:20px;flex:none}
 .st .ic .ring{position:absolute;inset:0;border-radius:999px;border:2px solid rgba(255,255,255,.25)}
 .st .ic .spin{position:absolute;inset:0;border-radius:999px;border:2px solid transparent;border-top-color:#fff;border-right-color:#fff}
-.st .ic .ok{position:absolute;inset:0;border-radius:999px;background:linear-gradient(45deg,#6cee52,#e8f000);opacity:0}
+.st .ic .ok{position:absolute;inset:0;border-radius:999px;background:#fff;opacity:0}
 .st .ic .ok svg{position:absolute;inset:0}
 .st .tx{transition:none}
 #lbar{position:absolute;left:28px;right:28px;bottom:30px;height:5px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
 #lbar i{display:block;height:100%;width:0;border-radius:999px;background:#fff;box-shadow:0 0 10px rgba(255,255,255,.45)}
 #pick{left:0;top:0;transform-origin:0 0;z-index:5}
+
+@font-face{font-family:Montserrat;font-weight:400;src:url(fonts/montserrat-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:500;src:url(fonts/montserrat-latin-500-normal.woff2) format("woff2")}
+/* range wheel (Figma 2018:27360 → 2018:26937): 142×224 glass, 1.0km → 1.5km */
+#range{left:42px;top:305.2px;width:142px;height:223.9px;border-radius:23.9px;overflow:hidden;
+  background:rgba(0,0,0,.2);backdrop-filter:blur(23px);-webkit-backdrop-filter:blur(23px);box-shadow:inset 0 0 0 .6px rgba(255,255,255,.15)}
+#range .ttl{position:absolute;left:0;right:0;top:19.1px;text-align:center;font:400 17.94px/22px Montserrat,sans-serif;color:#fff}
+#range .chip{position:absolute;left:9.5px;top:109px;width:123px;height:47.8px;border-radius:11.9px;
+  background:radial-gradient(ellipse at center,rgba(26,112,255,0) 22%,rgba(26,112,255,.08) 100%),rgba(255,255,255,.3);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);box-shadow:0 3.2px 15.9px rgba(0,0,0,.1)}
+#range .chip i{position:absolute;left:17.5px;top:20.7px;width:6.3px;height:6.3px;border-radius:999px;background:#fff}
+#range .rv{position:absolute;left:0;right:0;top:0;text-align:center;font-family:Montserrat,sans-serif;white-space:nowrap;transform-origin:50% 50%}
+#range .rv.in{left:34.9px;right:auto;width:84px}
 </style>
 </head>
 <body>
@@ -71,12 +84,13 @@ img{display:block}
 
   <div id="sceneA">
     <div id="row"></div>
+    <div id="range" class="abs"><div class="ttl">Range</div><div class="chip"><i></i></div><div id="rvals"></div></div>
     <div id="create" class="abs"><img src="assets/btnLabel.png" alt=""></div>
   </div>
 
   <div id="sceneL">
     <div id="lcard" class="abs glass">
-      <div class="hd"><div class="tag"><i></i>Culture &amp; Art</div><h2 id="lt">Building your route<span id="dots"></span></h2></div>
+      <div class="hd"><div class="tag"><i></i>Culture &amp; Art · 1.5km</div><h2 id="lt">Building your route<span id="dots"></span></h2></div>
       <div id="steps">
         <div class="st"><div class="ic"><i class="ring"></i><i class="spin"></i><i class="ok"><svg viewBox="0 0 20 20"><path d="M6 10.3l2.6 2.6L14.2 7.4" stroke="#1c1c1c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div><span class="tx">Finding pins that match your theme</span></div>
         <div class="st"><div class="ic"><i class="ring"></i><i class="spin"></i><i class="ok"><svg viewBox="0 0 20 20"><path d="M6 10.3l2.6 2.6L14.2 7.4" stroke="#1c1c1c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div><span class="tx">Checking opening hours</span></div>
@@ -107,7 +121,7 @@ img{display:block}
       </svg>
       <img id="pinsImg" class="pos" src="assets/pins.png" style="left:0;top:65px;width:625px" alt="">
       <img id="newPin" class="pos" src="assets/newPin.png" style="left:195.6px;top:51.6px;width:76.7px;opacity:0" alt="">
-      <div id="tl"><i></i><b style="top:0">1</b><b id="tl2" style="top:225px">2</b></div>
+      <div id="tl"><i></i><b style="top:0">1</b><b id="tl2" style="top:217px">2</b></div>
       <img id="oldList" class="pos" src="assets/oldList.png" style="left:45px;top:369px;width:565px" alt="">
       <img id="newCard" class="pos" src="assets/newCard.png" style="left:45px;top:367px;width:565px;opacity:0" alt="">
     </div>
@@ -142,9 +156,11 @@ const tr=(el,x,y,extra='')=>{el.style.transform=`translate(${x}px,${y}px)${extra
 
 /* ---- scene A: theme carousel (Figma motion: row -17 → -343 → -637 → -969, focus card scales up) ---- */
 const THEME_X=[0,371,686,1000,1315,1630], ROW=[-17,-343,-637,-969];
-const HOLD0=1.2;                       // rest on the theme screen before the carousel moves
+const HOLD0=2.3;                       // rest, set the range (1.0 → 1.5 km), then the carousel moves
+const RANGE={spin:[1.0,1.75]}, RV=['0km','0.5km','1.0km','1.5km','2.0km','2.5km','3.0km'], RV0=2, RV1=3;
 const STEPS=[[0.9,1.65],[1.85,2.6],[2.8,3.55]].map(([a,b])=>[a+HOLD0,b+HOLD0]);
 const CARD=281, CAR_GAP=34;   // Figma: 281px cards, 34px apart
+const rvEls=RV.map(v=>{const e=document.createElement('div');e.className='rv';e.textContent=v;$('rvals').appendChild(e);return e});
 const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left='0px';d.style.top='263px';
   const im=document.createElement('img');im.src=`assets/theme${i}.png`;d.appendChild(im);$('row').appendChild(d);return d});
 const A={in:[0,.5], tap:4.15+HOLD0, out:[4.45+HOLD0,4.85+HOLD0]};
@@ -170,6 +186,16 @@ function apply(t){
   const aIn=eout(prog(t,...A.in)), aOut=prog(t,...A.out);
   $('sceneA').style.opacity=aIn*(1-aOut); $('sceneA').style.visibility=aOut<1?'visible':'hidden';
   let f=0; STEPS.forEach(([a,b])=>{f+=eio(prog(t,a,b))});
+
+  /* range wheel: rows above/below shrink and fade (Figma: ±1 → 15.9px 50%, ±2 → 11.1px 20%) */
+  const rv=lerp(RV0,RV1,eio(prog(t,...RANGE.spin))), CY=133;     // chip centre in the card
+  rvEls.forEach((e,i)=>{const d=i-rv,a=Math.abs(d);
+    const y=Math.sign(d)*(a<=1?35.9*a:35.9+24*(a-1));
+    const fs=a<=1?lerp(19.83,15.87,a):lerp(15.87,11.11,Math.min(1,a-1));
+    const op=a<=1?lerp(1,.5,a):a<=2?lerp(.5,.2,a-1):Math.max(0,lerp(.2,0,(a-2)/.6));
+    const dark=a<.5; e.style.fontSize=fs+'px'; e.style.lineHeight='24px'; e.style.fontWeight=a<.5?700:500;
+    e.style.color=dark?'#1c1c1c':'#fff'; e.style.opacity=op; e.className='rv'+(a<.5?' in':'');
+    e.style.transform=`translateY(${CY+y-12}px)`; e.style.visibility=a>2.6?'hidden':'visible';});
   /* focused card always sits at the screen centre; every gap between visible card edges stays CAR_GAP */
   const sc=themes.map((d,i)=>1+.18*clamp(1-Math.abs(i-f)));
   const cx=[0]; for(let i=1;i<themes.length;i++) cx.push(cx[i-1]+CARD*sc[i-1]/2+CAR_GAP+CARD*sc[i]/2);
@@ -240,6 +266,7 @@ function apply(t){
 
   /* touch indicators (only during actions) */
   const tp=$('tap'),dg=$('drag'); tp.style.opacity=0; dg.style.opacity=0;
+  {const [a,b]=RANGE.spin; if(t>=a-.15&&t<b+.2){const k=eio(prog(t,a,b)); dg.style.opacity=prog(t,a-.15,a)*(1-prog(t,b,b+.2)); tr(dg,113,lerp(470,434,k));}}
   for(const [a,b] of STEPS){ if(t>=a-.15&&t<b+.2){const k=eio(prog(t,a,b)); dg.style.opacity=prog(t,a-.15,a)*(1-prog(t,b,b+.2)); tr(dg,lerp(760,520,k),402);} }
   const q=prog(t,A.tap,A.tap+.45); if(t>=A.tap&&q<1){tp.style.opacity=1-q;tr(tp,604,676,` scale(${.5+.7*q})`)}
   {const q=prog(t,C0,C0+.45); if(t>=C0&&q<1){tp.style.opacity=1-q;tr(tp,483+549,123+37,` scale(${.5+.7*q})`)}}
@@ -248,7 +275,7 @@ function apply(t){
 function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
 addEventListener('resize',fit);
 async function boot(){
-  try{await Promise.all(['500 12px Manrope','600 12px Manrope','700 12px Montserrat'].map(f=>document.fonts.load(f)))}catch(e){}
+  try{await Promise.all(['500 12px Manrope','600 12px Manrope','700 12px Montserrat','400 12px Montserrat','500 12px Montserrat'].map(f=>document.fonts.load(f)))}catch(e){}
   await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
   fit();apply(0);window.__ready=true;if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }

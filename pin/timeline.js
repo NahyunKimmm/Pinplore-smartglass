@@ -45,6 +45,16 @@ const G={};
 function rect(el){const s=$('stage').getBoundingClientRect(),r=el.getBoundingClientRect(),k=s.width/1536;
   return{x:(r.left-s.left)/k,y:(r.top-s.top)/k,w:r.width/k,h:r.height/k,cx:(r.left-s.left+r.width/2)/k,cy:(r.top-s.top+r.height/2)/k}}
 
+/* measure the badges/buttons from layout; re-run on every restart because a preloaded,
+   hidden frame can report zero sizes (Safari) */
+function measure(){const st=$('stage').style.transform,ct=$('cat').style.transform;
+  $('stage').style.transform='none';$('cat').style.transform='none';
+  const g={sc:rect($('b-scenery')),dict:rect($('dict')),drop:rect($('drop'))};
+  if(g.sc.w>0&&isFinite(g.sc.cx))Object.assign(G,g);
+  $('stage').style.transform=st;$('cat').style.transform=ct;}
+/* fallback geometry (Figma layout) in case measuring is impossible */
+Object.assign(G,{sc:{cx:224.5,cy:336.7},dict:{cx:814.9,cy:525.6},drop:{cx:612.7,cy:629.7}});
+
 /* tap pulse: white circle grows a little and fades (0.45s) */
 function tapAt(t){
   const taps=[[T.dictTap,G.dict],[T.dropTap,G.drop]];
@@ -122,8 +132,7 @@ async function boot(){
   buildTyped();
   await document.fonts.ready;
   await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
-  $('stage').style.transform='none';
-  G.sc=rect($('b-scenery'));G.dict=rect($('dict'));G.drop=rect($('drop'));
+  measure();
   fit();built=true;apply(0);window.__ready=true;
   if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }
@@ -133,7 +142,7 @@ let raf=0;
 function play(){cancelAnimationFrame(raf);playing=true;t0=performance.now()-tNow*1000;raf=requestAnimationFrame(loop)}
 function loop(now){if(!playing)return;tNow=Math.max(0,(now-t0)/1000);if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);raf=requestAnimationFrame(loop)}
 /* shell control: the showcase drives playback in persistent frames */
-window.__restart=()=>{playing=false;cancelAnimationFrame(raf);tNow=0;apply(0);play()};
+window.__restart=()=>{playing=false;cancelAnimationFrame(raf);measure();tNow=0;apply(0);play()};
 window.__pause=()=>{playing=false;cancelAnimationFrame(raf)};
 window.__resume=()=>{if(!playing&&tNow<DUR)play()};
 window.__t=()=>tNow;
