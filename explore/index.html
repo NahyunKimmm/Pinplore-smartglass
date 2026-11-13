@@ -37,6 +37,7 @@ img{display:block}
 <body>
 <div id="vp">
   <img id="bg" class="abs" src="assets/bg.jpg" alt="">
+  <video id="walk" class="abs" muted playsinline preload="auto" style="transform-origin:0 0"><source src="assets/walk.mp4" type="video/mp4"><source src="assets/walk.webm" type="video/webm"></video>
   <div id="pins"></div>
   <div id="shade" class="abs"></div>
   <div id="filterS" class="shell abs"></div>
@@ -62,7 +63,9 @@ const BG0={x:-70,y:-34}, SHIFT={x:42,y:-32};
 const PINS=[{x:595,y:439,w:55},{x:288,y:247,w:35},{x:114,y:668,w:42},{x:713,y:200,w:38},{x:931,y:316,w:54}];
 const PIN_OPEN=69, METRICS={x:1062,y:310}, FILTER_DX=141.4, CARD={x:265,y:248}, COL={x:39,y:89};
 
-const S1={tap:1.2, cardIn:[1.4,1.95], look:[1.5,2.7], cardOut:[4.4,5.1], swipe:[6.0,7.1], end:9.4};   // card stays a while, folds back into its pin, pause, then the list
+/* walk-in intro: real footage walks up to this exact framing, then the UI appears */
+const INTRO=5.0, VID={x:40.96,y:10.41,w:1290.06,rot:-0.357};     // last video frame aligned onto bg (SIFT fit)
+const S1=(o=>({tap:1.2+o, cardIn:[1.4+o,1.95+o], look:[1.5+o,2.7+o], cardOut:[4.4+o,5.1+o], swipe:[6.0+o,7.1+o], end:9.4+o}))(INTRO+0.6);   // card stays a while, folds back into its pin, pause, then the list
 const S2={swipe:[1.0,1.9], end:3.6};
 const DUR=S1.end;
 
@@ -88,8 +91,14 @@ function apply(t){
   /* Figma: while one pin is open, the other pins drop to 50% */
   const dim=open*(1-close);
   PINS.forEach((p,i)=>{const w=i===0?lerp(p.w,PIN_OPEN,grow):p.w, cx=p.x+p.w/2+dx, cy=p.y+p.w/2+dy;
-    pinEls[i].forEach(el=>{el.style.width=el.style.height=w+'px';tr(el,cx-w/2,cy-w/2);el.style.opacity=i===0?1:lerp(1,.5,dim)})});
+    const ap=eout(prog(t,INTRO+.05+i*.09,INTRO+.4+i*.09)); pinEls[i].forEach(el=>{el.style.width=el.style.height=w+'px';tr(el,cx-w/2,cy-w/2,` scale(${lerp(.6,1,ap)})`);el.style.opacity=ap*(i===0?1:lerp(1,.5,dim))})});
   tr($('metrics'),METRICS.x+mx,METRICS.y); tr($('filterS'),METRICS.x+FILTER_DX+mx,METRICS.y);
+  const railIn=eout(prog(t,INTRO+.2,INTRO+.7)); $('metrics').style.opacity=railIn; $('filterS').style.opacity=railIn;
+  /* walk-in footage on top until we arrive, then the identical still takes over */
+  const wv=$('walk'), wo=1-prog(t,INTRO-.2,INTRO+.05);
+  wv.style.opacity=wo; wv.style.visibility=wo>0?'visible':'hidden'; wv.style.width=VID.w+'px';
+  wv.style.transform=`translate(${BG0.x+VID.x}px,${BG0.y+VID.y}px) rotate(${VID.rot}deg)`;
+  syncWalk(t);
   /* card grows out of its pin and folds back into it (window-close motion) */
   const p0=PINS[0], ox=p0.x+p0.w/2+dx-CARD.x, oy=p0.y+p0.w/2+dy-CARD.y;
   const k=Math.max(0,Math.min(1,(close-0)/1)), sc=lerp(.82,1,open)*lerp(1,.06,k), op=open*(1-prog(k,.55,1));
@@ -102,11 +111,17 @@ function apply(t){
     const q=prog(t,t0,t0+.45); if(t>=t0&&q<1){tp.style.opacity=1-q;tr(tp,x+(t0===S1.tap?0:SHIFT.x*sh*0),y,` scale(${.5+.7*q})`)}}
   if(t>=S1.swipe[0]-.15&&t<S1.swipe[1]+.2){dg.style.opacity=prog(t,S1.swipe[0]-.15,S1.swipe[0])*(1-prog(t,S1.swipe[1],S1.swipe[1]+.2));tr(dg,lerp(28,330,sw),417);}
 }
+function syncWalk(t){const v=$('walk'); if(!v||!v.duration)return;
+  const want=Math.min(t,v.duration-.04);
+  if(t>=INTRO){if(!v.paused)v.pause();return}
+  if(playing){ if(v.paused){v.currentTime=want;v.play().catch(()=>{})} else if(Math.abs(v.currentTime-want)>.25) v.currentTime=want; }
+  else { if(!v.paused)v.pause(); if(Math.abs(v.currentTime-want)>.03) v.currentTime=want; }}
 function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
 addEventListener('resize',fit);
 async function boot(){
   try{await Promise.all([document.fonts.load('700 12px Montserrat'),document.fonts.load('400 12px Manrope')])}catch(e){}
   await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+  await new Promise(r=>{const v=$('walk');if(v.readyState>=3)return r();v.addEventListener('canplaythrough',r,{once:true});v.addEventListener('error',r,{once:true});setTimeout(r,6000)});
   fit();apply(0);window.__ready=true;if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }
 window.__seek=t=>apply(t);window.__DUR=DUR;
@@ -116,7 +131,7 @@ function play(){cancelAnimationFrame(raf);playing=true;t0=performance.now()-tNow
 function loop(now){if(!playing)return;tNow=Math.max(0,(now-t0)/1000);if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);raf=requestAnimationFrame(loop)}
 /* shell control: the showcase drives playback in persistent frames */
 window.__restart=()=>{playing=false;cancelAnimationFrame(raf);tNow=0;apply(0);play()};
-window.__pause=()=>{playing=false;cancelAnimationFrame(raf)};
+window.__pause=()=>{playing=false;cancelAnimationFrame(raf);try{$('walk').pause()}catch(e){}};
 window.__resume=()=>{if(!playing&&tNow<DUR)play()};
 window.__t=()=>tNow;
 /* fallback channel when the shell can't reach this frame directly (opened from file://) */
