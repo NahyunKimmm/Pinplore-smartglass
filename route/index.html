@@ -39,6 +39,36 @@ img{display:block}
 #fly{width:318px}
 .touch{width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:999px;background:rgba(255,255,255,.35);
   border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 10px rgba(0,0,0,.2);opacity:0;pointer-events:none;z-index:50}
+
+@font-face{font-family:Manrope;font-weight:500;src:url(fonts/manrope-latin-500-normal.woff2) format("woff2")}
+@font-face{font-family:Manrope;font-weight:600;src:url(fonts/manrope-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:700;src:url(fonts/montserrat-latin-700-normal.woff2) format("woff2")}
+/* scene L: route being built (between theme pick and the generated route) */
+#sceneL{position:absolute;inset:0;visibility:hidden}
+#lcard{left:375px;top:197px;width:460px;height:440px;border-radius:28.7px;overflow:hidden;transform-origin:50% 50%}
+#lcard .hd{position:absolute;left:116px;top:36px}
+#lcard .tag{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:999px;background:rgba(255,255,255,.14);
+  font:600 12px/1 Manrope,sans-serif;letter-spacing:.04em;text-transform:uppercase;color:rgba(255,255,255,.85)}
+#lcard .tag i{width:6px;height:6px;border-radius:999px;background:linear-gradient(45deg,#6cee52,#e8f000)}
+#lcard h2{margin-top:9px;font:700 23px/1.15 Montserrat,sans-serif;letter-spacing:-.3px;color:#fff;white-space:nowrap}
+#lcard h2 span{display:inline-block;width:24px;text-align:left}
+#mini{position:absolute;left:28px;top:124px;width:404px;height:150px;border-radius:20px;background:rgba(255,255,255,.08);
+  box-shadow:inset 0 0 0 .7px rgba(255,255,255,.12);overflow:hidden}
+#mini svg{position:absolute;inset:0}
+.mp{position:absolute;width:18px;height:18px;margin:-9px 0 0 -9px;border-radius:999px;background:linear-gradient(45deg,#6cee52,#e8f000);
+  box-shadow:0 0 0 2.5px #fff,0 0 14px rgba(108,238,82,.75);opacity:0}
+.scan{position:absolute;top:0;bottom:0;width:90px;background:linear-gradient(90deg,rgba(255,255,255,0),rgba(255,255,255,.16),rgba(255,255,255,0))}
+#steps{position:absolute;left:28px;top:296px;width:404px}
+.st{display:flex;align-items:center;gap:12px;height:30px;font:600 15px/1 Manrope,sans-serif;color:#fff}
+.st .ic{position:relative;width:20px;height:20px;flex:none}
+.st .ic .ring{position:absolute;inset:0;border-radius:999px;border:2px solid rgba(255,255,255,.25)}
+.st .ic .spin{position:absolute;inset:0;border-radius:999px;border:2px solid transparent;border-top-color:#fff;border-right-color:#fff}
+.st .ic .ok{position:absolute;inset:0;border-radius:999px;background:linear-gradient(45deg,#6cee52,#e8f000);opacity:0}
+.st .ic .ok svg{position:absolute;inset:0}
+.st .tx{transition:none}
+#lbar{position:absolute;left:28px;right:28px;bottom:30px;height:5px;border-radius:999px;background:rgba(255,255,255,.14);overflow:hidden}
+#lbar i{display:block;height:100%;width:0;border-radius:999px;background:linear-gradient(90deg,#6cee52,#e8f000);box-shadow:0 0 10px rgba(108,238,82,.6)}
+#pick{left:0;top:0;transform-origin:0 0;z-index:5}
 </style>
 </head>
 <body>
@@ -48,6 +78,25 @@ img{display:block}
   <div id="sceneA">
     <div id="row"></div>
     <div id="create" class="abs"><img src="assets/btnLabel.png" alt=""></div>
+  </div>
+
+  <div id="sceneL">
+    <div id="lcard" class="abs glass">
+      <div class="hd"><div class="tag"><i></i>Culture &amp; Art</div><h2 id="lt">Building your route<span id="dots"></span></h2></div>
+      <div id="mini">
+        <div class="scan" id="scan"></div>
+        <svg viewBox="0 0 404 150"><defs><filter id="lg" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+          <path id="lpath" pathLength="1" d="M36 104 C70 70 96 58 128 72 S176 120 214 98 S262 34 300 46 S352 92 372 64" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" stroke-dasharray="0 1" filter="url(#lg)"/></svg>
+        <i class="mp" style="left:36px;top:104px"></i><i class="mp" style="left:128px;top:72px"></i><i class="mp" style="left:214px;top:98px"></i><i class="mp" style="left:300px;top:46px"></i><i class="mp" style="left:372px;top:64px"></i>
+      </div>
+      <div id="steps">
+        <div class="st"><div class="ic"><i class="ring"></i><i class="spin"></i><i class="ok"><svg viewBox="0 0 20 20"><path d="M6 10.3l2.6 2.6L14.2 7.4" stroke="#1c1c1c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div><span class="tx">Finding pins that match your theme</span></div>
+        <div class="st"><div class="ic"><i class="ring"></i><i class="spin"></i><i class="ok"><svg viewBox="0 0 20 20"><path d="M6 10.3l2.6 2.6L14.2 7.4" stroke="#1c1c1c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div><span class="tx">Checking opening hours</span></div>
+        <div class="st"><div class="ic"><i class="ring"></i><i class="spin"></i><i class="ok"><svg viewBox="0 0 20 20"><path d="M6 10.3l2.6 2.6L14.2 7.4" stroke="#1c1c1c" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></i></div><span class="tx">Connecting the best walking order</span></div>
+      </div>
+      <div id="lbar"><i id="lprog"></i></div>
+    </div>
+    <img id="pick" class="abs" src="assets/theme3.png" alt="">
   </div>
 
   <div id="sceneB">
@@ -108,10 +157,19 @@ const THEME_X=[0,371,686,1000,1315,1630], ROW=[-17,-343,-637,-969];
 const STEPS=[[0.9,1.65],[1.85,2.6],[2.8,3.55]];
 const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left=(x+(i===0?28:0))+'px';d.style.top='1px';
   const im=document.createElement('img');im.src=`assets/theme${i}.png`;d.appendChild(im);$('row').appendChild(d);return d});
-const A={in:[0,.5], tap:4.15, out:[4.45,4.9]};
+const A={in:[0,.5], tap:4.15, out:[4.45,4.85]};
 
 /* ---- scene B: drag a pin card into the route (Figma motion, 6s, offset by B0) ---- */
-const B0=4.6;
+/* ---- scene L: the chosen theme folds into a glass card while the route is built ---- */
+const L0=4.5;
+const L={fly:[0,.75], cardIn:[.25,.8], steps:[[.6,1.35],[1.35,2.0],[2.0,2.75]], draw:[.7,2.75], out:[3.0,3.45]};
+const PICK_FROM={x:435.7,y:237.7,w:331.6}, PICK_TO={x:375+26,y:197+26,w:76};
+const B0=L0+3.25;
+/* where each mini-map pin sits along the drawn path (0..1), so it pops exactly when the line arrives */
+let PF=[0,.25,.5,.75,1];
+function measurePins(){const p=$('lpath'),L=p.getTotalLength(),N=400,pts=[];for(let i=0;i<=N;i++){const q=p.getPointAtLength(L*i/N);pts.push([q.x,q.y,i/N])}
+  PF=[...document.querySelectorAll('#mini .mp')].map(m=>{const x=parseFloat(m.style.left),y=parseFloat(m.style.top);let b=pts[0],d=1e9;
+    for(const q of pts){const e=(q[0]-x)**2+(q[1]-y)**2;if(e<d){d=e;b=q}}return b[2]})}
 const B={in:[0,.45], hold:1.07, fly:[1.39,2.3], land:2.3, listUp:[1.35,1.85], shift:[1.75,2.3], expand:[2.3,2.85], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
 const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
 const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:4.8};
@@ -127,6 +185,28 @@ function apply(t){
   tr($('row'),rowX,0);
   themes.forEach((d,i)=>{const near=clamp(1-Math.abs(i-f));d.style.transform=`scale(${1+.18*near})`;d.style.opacity=.5+.5*near;d.style.zIndex=Math.round(near*10)});
   $('create').style.transform=`scale(${1-.03*Math.sin(Math.PI*prog(t,A.tap,A.tap+.3))})`;
+
+  /* scene L */
+  const tl=t-L0, lIn=eout(prog(tl,...L.cardIn)), lOut=eio(prog(tl,...L.out));
+  $('sceneL').style.visibility=(tl>=0&&lOut<1)?'visible':'hidden';
+  const lc=$('lcard'); lc.style.opacity=lIn*(1-lOut);
+  lc.style.transform=`scale(${lerp(.94,1,lIn)*lerp(1,1.04,lOut)})`; lc.style.filter=lOut>0?`blur(${12*lOut}px)`:'none';
+  const pf=eio(prog(tl,...L.fly)), pw=lerp(PICK_FROM.w,PICK_TO.w,pf);
+  const pk2=$('pick'); pk2.style.width=pk2.style.height=pw+'px';
+  pk2.style.transform=`translate(${lerp(PICK_FROM.x,PICK_TO.x,pf)}px,${lerp(PICK_FROM.y,PICK_TO.y,pf)}px)`;
+  pk2.style.opacity=(tl>=0?1:0)*(1-lOut); pk2.style.filter=lOut>0?`blur(${12*lOut}px)`:'none';
+  const dr=eio(prog(tl,...L.draw)); $('lpath').setAttribute('stroke-dasharray',`${dr} 1`);
+  document.querySelectorAll('#mini .mp').forEach((m,i)=>{const k=prog(dr,PF[i]-.03,PF[i]+.03); m.style.opacity=k; m.style.transform=`scale(${k<1?lerp(.4,1.15,k):1})`});
+  tr($('scan'),lerp(-90,404,(Math.max(0,tl)*.55)%1),0); $('scan').style.opacity=1-prog(tl,L.draw[1]-.2,L.draw[1]);
+  document.querySelectorAll('#steps .st').forEach((el,i)=>{const [a,b]=L.steps[i];
+    const act=tl>=a, done=tl>=b;
+    el.querySelector('.tx').style.opacity=act?1:.45;
+    el.querySelector('.spin').style.opacity=act&&!done?1:0; el.querySelector('.spin').style.transform=`rotate(${tl*400}deg)`;
+    const ok=el.querySelector('.ok'); const ok2=prog(tl,b,b+.2); ok.style.opacity=ok2; ok.style.transform=`scale(${done?lerp(.6,1,ok2):.6})`;});
+  $('lprog').style.width=(eio(prog(tl,.4,2.85))*100)+'%';
+  $('dots').textContent=tl>=L.steps[2][1]?'':'.'.repeat(1+Math.floor((Math.max(0,tl)*3)%3));
+  if(tl>=L.steps[2][1]) $('lt').firstChild.textContent='Your route is ready';
+  else $('lt').firstChild.textContent='Building your route';
 
   /* scene B */
   const tb=t-B0;
@@ -173,8 +253,9 @@ function apply(t){
 function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
 addEventListener('resize',fit);
 async function boot(){
+  try{await Promise.all(['500 12px Manrope','600 12px Manrope','700 12px Montserrat'].map(f=>document.fonts.load(f)))}catch(e){}
   await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
-  fit();apply(0);window.__ready=true;if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
+  measurePins();fit();apply(0);window.__ready=true;if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }
 window.__seek=t=>apply(t);window.__DUR=DUR;
 let playing=false,t0=0,tNow=0;
