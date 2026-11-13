@@ -17,7 +17,9 @@ img{display:block}
   backdrop-filter:blur(5.2px);-webkit-backdrop-filter:blur(5.2px);box-shadow:0 4.1px 20.7px rgba(0,0,0,.1)}
 #head{left:496px;top:31px;width:219px;height:64px}
 .pinS{border-radius:999px;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
-#filterS{width:53.6px;height:239px;border-radius:133px;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
+#filterS{width:53.8px;height:239px;border-radius:133px;background:rgba(255,255,255,.3);backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
+/* Figma: metrics + filter rail sit in one group with Screen blend */
+#filterS,#metrics{mix-blend-mode:screen}
 @font-face{font-family:Manrope;font-weight:400;src:url(fonts/manrope-latin-400-normal.woff2) format("woff2")}
 @font-face{font-family:Montserrat;font-weight:700;src:url(fonts/montserrat-latin-700-normal.woff2) format("woff2")}
 /* right-side metrics as live text (Figma: 120 wide, 24 gap, value 25.9 Montserrat Bold, label 8 Manrope +6%) */
@@ -83,8 +85,10 @@ function apply(t){
   mx=lerp(120*eio(prog(t,...S1.cardIn))*(1-eio(prog(t,S1.cardOut[1]-.2,S1.cardOut[1]+.4))),160,sw); colX=lerp(-300,COL.x,sw); shade=sw;
   const dx=SHIFT.x*sh, dy=SHIFT.y*sh;
   tr($('bg'),BG0.x+dx,BG0.y+dy);
+  /* Figma: while one pin is open, the other pins drop to 50% */
+  const dim=open*(1-close);
   PINS.forEach((p,i)=>{const w=i===0?lerp(p.w,PIN_OPEN,grow):p.w, cx=p.x+p.w/2+dx, cy=p.y+p.w/2+dy;
-    pinEls[i].forEach(el=>{el.style.width=el.style.height=w+'px';tr(el,cx-w/2,cy-w/2)})});
+    pinEls[i].forEach(el=>{el.style.width=el.style.height=w+'px';tr(el,cx-w/2,cy-w/2);el.style.opacity=i===0?1:lerp(1,.5,dim)})});
   tr($('metrics'),METRICS.x+mx,METRICS.y); tr($('filterS'),METRICS.x+FILTER_DX+mx,METRICS.y);
   /* card grows out of its pin and folds back into it (window-close motion) */
   const p0=PINS[0], ox=p0.x+p0.w/2+dx-CARD.x, oy=p0.y+p0.w/2+dy-CARD.y;
