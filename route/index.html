@@ -111,7 +111,7 @@ const A={in:[0,.5], tap:4.15, out:[4.45,4.9]};
 
 /* ---- scene B: drag a pin card into the route (Figma motion, 6s, offset by B0) ---- */
 const B0=4.6;
-const B={in:[0,.45], hold:1.07, fly:[1.39,2.35], land:2.42, listUp:[1.51,1.77], shift:[1.85,2.4], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
+const B={in:[0,.45], hold:1.07, fly:[1.39,2.3], land:2.3, listUp:[1.35,1.85], shift:[1.75,2.3], expand:[2.3,2.85], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
 const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
 const C={tap:0, out:[.25,.7], in:[.55,1.15], end:4.4};
 const DUR=C0+C.end;
@@ -131,16 +131,19 @@ function apply(t){
   const tb=t-B0;
   const bIn=eout(prog(tb,...B.in));
   $('sceneB').style.opacity=bIn; $('sceneB').style.visibility=bIn>0?'visible':'hidden';
-  const up=-281*eio(prog(tb,...B.listUp));
-  LIST.forEach((y,i)=>{const el=$('c'+i); tr(el,9,61+y+(i?up:0)); if(!i) el.style.opacity=1-prog(tb,B.hold,B.hold+.22)});
+  const up=-266*eio(prog(tb,...B.listUp));
+  const col=eio(prog(tb,...B.listUp));
+  LIST.forEach((y,i)=>{const el=$('c'+i); if(!i){el.style.transformOrigin='50% 0';tr(el,9,61+y,` scaleY(${1-col})`);el.style.opacity=1-prog(tb,B.hold,B.hold+.22);} else tr(el,9,61+y+up)});
   // floating copy: lifted on pinch, carried to the itinerary
   const fk2=eio(prog(tb,...B.fly)), lift=prog(tb,B.hold,B.hold+.22);
   const fx=lerp(CARD_FROM.x,CARD_TO.x,fk2), fy=lerp(CARD_FROM.y,CARD_TO.y,fk2)-Math.sin(fk2*Math.PI)*40;
-  $('fly').style.opacity=lift*(1-prog(tb,B.land,B.land+.12)); tr($('fly'),fx-9,fy-12,` scale(${1+.04*lift})`);
+  $('fly').style.opacity=lift*(1-prog(tb,B.land-.1,B.land)); tr($('fly'),fx-9,fy-12,` scale(${1+.04*lift})`);
   // itinerary makes room, new card lands at the top
   const sh=eio(prog(tb,...B.shift));
   tr($('oldList'),0,-6.7+260*sh); tr($('tl2'),0,260*sh);
-  $('newCard').style.opacity=prog(tb,B.land,B.land+.15);
+  const ex=eio(prog(tb,...B.expand)), nc=$('newCard');
+  nc.style.opacity=prog(tb,B.land-.06,B.land+.02);
+  nc.style.clipPath=`inset(0px ${lerp(237,0,ex)}px ${lerp(14,0,ex)}px 0px round 22px)`;
   // route regenerates
   $('r0').style.opacity=1-eio(prog(tb,...B.oldOut));
   $('r1').setAttribute('stroke-dasharray',`${eio(prog(tb,...B.draw))} 1`);
