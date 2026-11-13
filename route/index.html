@@ -20,7 +20,7 @@ img{display:block}
 /* scene A: themes */
 #sceneA{position:absolute;inset:0}
 #row{position:absolute;left:0;top:0}
-.theme{position:absolute;width:336.5px;height:336.5px;transform-origin:50% 50%}  /* image = 281px card + shadow margin */
+.theme{position:absolute;width:281px;height:281px;transform-origin:50% 50%}  /* image includes ~8% shadow margin */
 .theme img{position:absolute;inset:0;width:100%;height:100%;border-radius:inherit}
 #create{left:367px;top:650px;width:475px;height:53px;border-radius:32.6px;background:rgba(255,255,255,.8);
   backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);box-shadow:0 0 20px rgba(0,0,0,.08)}
@@ -159,7 +159,7 @@ const THEME_X=[0,371,686,1000,1315,1630], ROW=[-17,-343,-637,-969];
 const HOLD0=2.3;                       // rest, set the range (1.0 → 1.5 km), then the carousel moves
 const RANGE={spin:[1.0,1.75]}, RV=['0km','0.5km','1.0km','1.5km','2.0km','2.5km','3.0km'], RV0=2, RV1=3;
 const STEPS=[[0.9,1.65],[1.85,2.6],[2.8,3.55]].map(([a,b])=>[a+HOLD0,b+HOLD0]);
-const CARD=281, CAR_GAP=33.6, BOX=CARD/0.835;   // Figma: 281px cards, 33.6px apart (BOX includes the exported shadow margin)
+const BOX=281, CARD=BOX, CAR_GAP=4;   // 281px images; each carries ~23px shadow margin, so visible card gaps ≈ 50px
 const rvEls=RV.map(v=>{const e=document.createElement('div');e.className='rv';e.textContent=v;$('rvals').appendChild(e);return e});
 const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left='0px';d.style.top=(403.5-BOX/2)+'px';
   const im=document.createElement('img');im.src=`assets/theme${i}.png`;d.appendChild(im);$('row').appendChild(d);return d});
