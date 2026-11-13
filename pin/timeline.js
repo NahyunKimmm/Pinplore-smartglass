@@ -125,12 +125,18 @@ async function boot(){
   $('stage').style.transform='none';
   G.sc=rect($('b-scenery'));G.dict=rect($('dict'));G.drop=rect($('drop'));
   fit();built=true;apply(0);window.__ready=true;
-  if(!CAPTURE)setTimeout(play,500);
+  if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }
 window.__seek=t=>apply(t);window.__DUR=DUR;
 let playing=false,t0=0,tNow=0;
-function play(){playing=true;t0=performance.now()-tNow*1000;requestAnimationFrame(loop)}
-function loop(now){if(!playing)return;tNow=(now-t0)/1000;if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);requestAnimationFrame(loop)}
+let raf=0;
+function play(){cancelAnimationFrame(raf);playing=true;t0=performance.now()-tNow*1000;raf=requestAnimationFrame(loop)}
+function loop(now){if(!playing)return;tNow=Math.max(0,(now-t0)/1000);if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);raf=requestAnimationFrame(loop)}
+/* shell control: the showcase drives playback in persistent frames */
+window.__restart=()=>{playing=false;cancelAnimationFrame(raf);tNow=0;apply(0);play()};
+window.__pause=()=>{playing=false;cancelAnimationFrame(raf)};
+window.__resume=()=>{if(!playing&&tNow<DUR)play()};
+window.__t=()=>tNow;
 addEventListener('keydown',e=>{
   if(e.code==='Space'){e.preventDefault();if(playing)playing=false;else{if(tNow>=DUR)tNow=0;play()}}
   if(e.key==='r'||e.key==='R'){tNow=0;apply(0);playing=false;setTimeout(play,400)}

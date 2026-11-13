@@ -9,8 +9,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&family=Manrope:wght@400;500;600&display=swap">
 <style>
-</head>
-<body style="margin:0">
 /* One continuous glass session on iPad Pro 11" landscape (1210×834):
    a persistent AR head bar drives the flows; scenes hand off with a focus pull instead of a cut. */
 :root{
@@ -22,7 +20,7 @@
 html,body{height:100%}
 body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidden}
 .screen{position:fixed;inset:0;background:var(--bg)}
-.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;will-change:transform,filter,opacity}
+.screen iframe{position:absolute;inset:0;width:100%;height:100%;border:0;opacity:0;visibility:hidden}
 
 /* persistent head bar, laid over the flow at its Figma spot (496,31 · 219×64 in the 1210×834 frame) */
 #hud{position:fixed;left:0;top:0;width:1210px;height:834px;transform-origin:0 0;pointer-events:none;z-index:6}
@@ -46,15 +44,14 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
 .show-ui .ui{opacity:1;transform:none;pointer-events:auto}
 .bar{display:flex;align-items:center;gap:6px;padding:6px;border-radius:999px;background:var(--glass);
   backdrop-filter:blur(18px) saturate(1.2);-webkit-backdrop-filter:blur(18px) saturate(1.2);box-shadow:inset 0 0 0 1px var(--line),0 10px 30px rgba(0,0,0,.35)}
-.bar button{all:unset;cursor:pointer;white-space:nowrap;font:600 14px/1 var(--body);color:var(--fg);padding:12px 16px;border-radius:999px}
+.bar button{all:unset;cursor:pointer;white-space:nowrap;font:600 14px/1 var(--body);color:var(--fg);padding:12px 16px;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;gap:8px}
 .bar button:focus-visible{outline:2px solid var(--pin-a);outline-offset:1px}
 @media (prefers-reduced-motion:reduce){.head .knob,.head button img{transition:none}}
 </style>
 
-<div class="screen" id="screen">
-  <iframe id="fa" title="Prototype"></iframe>
-  <iframe id="fb" title="Prototype"></iframe>
-</div>
+</head>
+<body>
+<div class="screen" id="screen"></div>
 <div id="hud">
   <div class="head" id="head">
     <span class="knob" id="knob"></span>
@@ -66,7 +63,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
 </div>
 <div class="progress"><i id="prog"></i></div>
 <div class="ui"><div class="bar">
-  <button id="pause" type="button">Pause</button>
+  <button id="pause" type="button" aria-label="Pause"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path id="pp" d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z" fill="currentColor"/></svg><span id="ppT">Pause</span></button>
   <button id="full" type="button">Full screen</button>
 </div></div>
 
@@ -80,23 +77,33 @@ const FLOWS=[
 ];
 const HOLD=1.4, OUT=.55, IN=.75;
 const $=id=>document.getElementById(id);
-const frames=[$('fa'),$('fb')]; let front=-1, idx=0, paused=false, timer=null, t0=0, total=1, uiT=0, swapT=0;
 const tabs=[...document.querySelectorAll('.head button')];
-tabs.forEach((b,i)=>{b.style.left=(6.2+51.65*i)+'px';b.onclick=e=>{e.stopPropagation();go(i,true);showUI()}});
+let idx=-1, paused=false, endAt=0, uiT=0, seq=0;
 
+/* every flow lives in its own frame for the whole session: loaded once, then restarted in place.
+   Switching never reloads, so a tab tap answers at once and rapid taps can't race each other. */
+const frames=FLOWS.map((f,i)=>{const el=document.createElement('iframe');el.title=f.src.split('/')[0];
+  el.setAttribute('aria-hidden','true');$('screen').appendChild(el);
+  f.ready=new Promise(res=>{el.onload=()=>{embed(el);const w=el.contentWindow;
+    (function wait(){try{if(w.__ready){f.dur=w.__DUR||f.dur;return res()}}catch(e){return res()}setTimeout(wait,30)})()}});
+  return el});
+const call=(i,k,...a)=>{try{const fn=frames[i].contentWindow[k];return typeof fn==='function'?fn(...a):undefined}catch(e){}};
+/* load the first flow first, the rest right after so the opener isn't competing for bandwidth */
+frames[0].src=FLOWS[0].src+'?embed=1';
+FLOWS[0].ready.then(()=>frames.forEach((el,i)=>{if(i)el.src=FLOWS[i].src+'?embed=1'}));
+
+tabs.forEach((b,i)=>{b.style.left=(6.2+51.65*i)+'px';b.onclick=e=>{e.stopPropagation();go(i,true);showUI()}});
 function placeHud(){const k=Math.min(innerWidth/1210,innerHeight/834),ox=(innerWidth-1210*k)/2,oy=(innerHeight-834*k)/2;
   $('hud').style.transform=`translate(${ox}px,${oy}px) scale(${k})`}
 addEventListener('resize',placeHud);placeHud();
-
-function setTab(i){tabs.forEach((b,j)=>b.setAttribute('aria-current',j===i));
-  $('knob').style.transform=`translateX(${51.65*i}px)`;}
+function setTab(i){tabs.forEach((b,j)=>b.setAttribute('aria-current',j===i));$('knob').style.transform=`translateX(${51.65*i}px)`}
 
 /* scene handoff: the outgoing view loses focus and drifts back, the next one pulls into focus */
 const ease='cubic-bezier(.4,0,.2,1)';
-function leave(f){f.style.transition=`transform ${OUT}s ${ease}, filter ${OUT}s ${ease}`;
-  f.style.transform='scale(1.04)';f.style.filter='blur(14px)';f.style.zIndex=1;
-  setTimeout(()=>{if(frames[front]!==f){f.style.transition='none';f.style.opacity=0}},(IN+.1)*1000)}
-function enter(f){f.style.transition='none';f.style.opacity=0;f.style.transform='scale(.97)';f.style.filter='blur(14px)';f.style.zIndex=2;
+function leave(i){const f=frames[i];f.style.transition=`transform ${OUT}s ${ease}, filter ${OUT}s ${ease}, opacity ${OUT}s ${ease} ${IN-.2}s`;
+  f.style.transform='scale(1.04)';f.style.filter='blur(14px)';f.style.opacity=0;f.style.zIndex=1;
+  setTimeout(()=>{if(idx!==i){call(i,'__pause');f.style.visibility='hidden'}},(OUT+IN)*1000)}
+function enter(i){const f=frames[i];f.style.visibility='visible';f.style.transition='none';f.style.opacity=0;f.style.transform='scale(.97)';f.style.filter='blur(14px)';f.style.zIndex=2;
   f.getBoundingClientRect();
   f.style.transition=`opacity ${IN}s ${ease}, transform ${IN}s ${ease}, filter ${IN}s ${ease}`;
   f.style.opacity=1;f.style.transform='none';f.style.filter='none'}
@@ -105,41 +112,44 @@ function embed(f){try{const d=f.contentDocument,s=d.createElement('style');
   s.textContent='#head,#headS,#headA,#headAimg{visibility:hidden!important}';d.head.appendChild(s);
   d.addEventListener('pointerdown',()=>{showUI();wake()})}catch(e){}}
 
-function go(i,user){
-  idx=(i+FLOWS.length)%FLOWS.length; const f=FLOWS[idx]; setTab(idx);
-  if(user&&paused){paused=false;$('pause').textContent='Pause'}
-  clearTimeout(timer);
-  const next=frames[front<0?0:1-front], prev=front<0?null:frames[front];
-  next.onload=()=>{
-    embed(next);
-    if(prev) leave(prev);
-    clearTimeout(swapT); swapT=setTimeout(()=>enter(next), prev?120:0);
-    front=frames.indexOf(next);
-    let d=f.dur; try{d=next.contentWindow.__DUR||d}catch(e){}
-    total=d+HOLD+.3; t0=performance.now();
-    if(!paused) timer=setTimeout(()=>go(idx+1),total*1000);
-  };
-  next.src=f.src+'#'+Date.now();
+async function go(i,user){
+  i=(i+FLOWS.length)%FLOWS.length; const my=++seq; setTab(i);
+  if(user&&paused) setPaused(false);
+  await FLOWS[i].ready; if(my!==seq) return;            // a newer tap won: drop this one
+  const prev=idx; idx=i; endAt=0;
+  call(i,'__restart'); if(paused) call(i,'__pause');
+  if(prev===i){enter(i);return}
+  if(prev>=0) leave(prev);
+  setTimeout(()=>{if(idx===i)enter(i)}, prev>=0?120:0);
 }
 
-/* the head bar follows the flow: it steps aside when a flow hides it (navigation views) */
+function setPaused(p){paused=p;$('ppT').textContent=p?'Play':'Pause';$('pause').setAttribute('aria-label',p?'Play':'Pause');
+  $('pp').setAttribute('d',p?'M8 5.5v13l11-6.5z':'M7 5h3.5v14H7zM13.5 5H17v14h-3.5z');
+  if(idx<0)return;
+  if(p) call(idx,'__pause'); else if((call(idx,'__t')??0)>=FLOWS[idx].dur) go(idx+1); else {call(idx,'__resume');endAt=0}}
+
+/* progress + auto-advance follow the flow's own clock, so pause holds both */
 function tick(){
-  const p=Math.min(1,(performance.now()-t0)/(total*1000)); $('prog').style.width=(p*100)+'%';
-  let o=1; try{const d=frames[front].contentDocument,h=d.getElementById('head')||d.getElementById('headA');
-    if(h){const v=h.style.opacity; o=v===''?1:+v}}catch(e){}
-  $('head').style.opacity=o; $('head').style.pointerEvents=o>.5?'auto':'none';
+  if(idx>=0){const f=FLOWS[idx],t=call(idx,'__t')??0;
+    $('prog').style.width=Math.min(100,t/f.dur*100)+'%';
+    if(!paused&&t>=f.dur){if(!endAt)endAt=performance.now();else if(performance.now()-endAt>HOLD*1000){endAt=0;go(idx+1)}}
+    let o=1; try{const d=frames[idx].contentDocument,h=d.getElementById('head')||d.getElementById('headA');
+      if(h){const v=h.style.opacity;o=v===''?1:+v}}catch(e){}
+    $('head').style.opacity=o;$('head').style.pointerEvents=o>.5?'auto':'none';}
   requestAnimationFrame(tick);
 }
-$('pause').onclick=e=>{e.stopPropagation();paused=!paused;$('pause').textContent=paused?'Play':'Pause';
-  if(paused)clearTimeout(timer);else go(idx);showUI()};
+$('pause').onclick=e=>{e.stopPropagation();setPaused(!paused);showUI()};
 $('full').onclick=async e=>{e.stopPropagation();const el=document.documentElement;
   try{ if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
        else await (el.requestFullscreen||el.webkitRequestFullscreen).call(el) }catch(err){} showUI()};
 function showUI(){document.body.classList.add('show-ui');clearTimeout(uiT);uiT=setTimeout(()=>document.body.classList.remove('show-ui'),3500)}
 document.addEventListener('pointerdown',()=>{showUI();wake()});
+document.addEventListener('keydown',e=>{if(e.code==='Space'){e.preventDefault();setPaused(!paused);showUI()}
+  if(/^[1-4]$/.test(e.key)){go(+e.key-1,true);showUI()}});
 async function wake(){try{await navigator.wakeLock?.request('screen')}catch(e){}}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)wake()});
 wake(); tick(); go(0);
 </script>
+
 </body>
 </html>
