@@ -7,7 +7,7 @@
 ## 플로우
 | 헤더 탭 | 플로우 | 파일 |
 |---|---|---|
-| 나침반 | 익스플로어 — 핀 열기 → 시선 이동 → 카드 닫기 → 주변 핀 리스트 | `explore/index.html` |
+| 나침반 | 익스플로어 — 핀 열기 → 시선 이동 → 카드가 핀으로 접히며 닫힘 → 주변 핀 리스트 | `explore/index.html` |
 | + | 핀 작성 — 카테고리 선택 → 핀 드래그 → 딕테이션 → Drop Pin | `pin/index.html` |
 | 경로 | 경로 생성 — 테마 선택 → Create route → 핀 추가 → 경로 재생성 → Navigate로 첫 장소 안내 | `route/index.html` |
 | 북마크 | 컬렉션 → 네비게이션 | `nav/index.html` |
