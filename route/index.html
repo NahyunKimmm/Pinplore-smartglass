@@ -78,7 +78,7 @@ img{display:block}
   </div>
 
   <div id="sceneC" style="position:absolute;inset:0;opacity:0;visibility:hidden">
-    <img src="assets/navbg.jpg" class="abs" style="width:1210px;height:834px" alt="">
+    <img id="navBg" src="assets/navbg.jpg" class="abs" style="width:1210px;height:834px;transform-origin:50% 50%" alt="">
     <div id="floorWrap" style="position:absolute;left:473px;top:543px;width:264px;height:245px;mix-blend-mode:screen">
       <img src="assets/floor.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="">
     </div>
@@ -114,7 +114,7 @@ const A={in:[0,.5], tap:4.15, out:[4.45,4.9]};
 const B0=4.6;
 const B={in:[0,.45], hold:1.07, fly:[1.39,2.3], land:2.3, listUp:[1.35,1.85], shift:[1.75,2.3], expand:[2.3,2.85], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
 const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
-const C={tap:0, out:[.25,.7], in:[.55,1.15], end:4.4};
+const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:4.8};
 const DUR=C0+C.end;
 const LIST=[0,266,393,613], CARD_FROM={x:158,y:196}, CARD_TO={x:537,y:502};
 
@@ -156,7 +156,11 @@ function apply(t){
   if(tc>0){ $('sceneB').style.opacity=bIn*(1-cOut); }
   const head=1-cOut; $('headS').style.opacity=head; $('head').style.opacity=head;
   $('sceneC').style.opacity=cIn; $('sceneC').style.visibility=cIn>0?'visible':'hidden';
-  $('floorWrap').style.transform=`translateY(${(1-cIn)*14}px)`;
+  /* background pulls into focus: blur clears while the view zooms out to rest */
+  const fz=eout(prog(tc,...C.focus)), ui=eout(prog(tc,...C.ui));
+  $('navBg').style.filter=`blur(${lerp(22,0,fz)}px)`; $('navBg').style.transform=`scale(${lerp(1.18,1,fz)})`;
+  [...$('sceneC').children].forEach(el=>{if(el.id!=='navBg') el.style.opacity=ui});
+  $('floorWrap').style.transform=`translateY(${(1-ui)*14}px)`;
   $('nb').style.transform=`scale(${1-.04*Math.sin(Math.PI*prog(tc,C.tap,C.tap+.3))})`;
 
   /* touch indicators (only during actions) */
