@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pinplore Glass · Explore View</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#vp{position:relative;width:1210px;height:834px;overflow:hidden;flex:none;transform-origin:center}
+.abs{position:absolute;left:0;top:0;will-change:transform,opacity}
+img{display:block}
+#bg{width:1351px;height:900px}
+.shell{position:absolute;pointer-events:none}
+#headS{left:496px;top:31px;width:219px;height:64px;border-radius:999px;background:rgba(0,0,0,.3);
+  backdrop-filter:blur(5.2px);-webkit-backdrop-filter:blur(5.2px);box-shadow:0 4.1px 20.7px rgba(0,0,0,.1)}
+#head{left:496px;top:31px;width:219px;height:64px}
+.pinS{border-radius:999px;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
+#filterS{width:53.6px;height:239px;border-radius:133px;backdrop-filter:blur(11px);-webkit-backdrop-filter:blur(11px)}
+#metrics{width:195px;height:239px;mix-blend-mode:screen}
+#cardS{width:337px;height:482.5px;border-radius:15.7px;backdrop-filter:blur(23px);-webkit-backdrop-filter:blur(23px);box-shadow:0 0 118px rgba(0,0,0,.25)}
+#card{width:337px;height:482.5px}
+#shade{width:683px;height:834px;background:linear-gradient(to right,rgba(0,0,0,.5),rgba(0,0,0,0))}
+#column{width:262px;height:800px}
+.touch{width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:999px;background:rgba(255,255,255,.35);
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 10px rgba(0,0,0,.2);opacity:0;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="vp">
+  <img id="bg" class="abs" src="assets/bg.jpg" alt="">
+  <div id="pins"></div>
+  <div id="shade" class="abs"></div>
+  <div id="filterS" class="shell abs"></div>
+  <img id="metrics" class="abs" src="assets/metrics.png" alt="">
+  <div id="headS" class="shell abs"></div><img id="head" class="abs" src="assets/head.png" alt="">
+  <div id="cardS" class="shell abs"></div><img id="card" class="abs" src="assets/card.png" alt="">
+  <img id="column" class="abs" src="assets/column.png" alt="">
+  <div id="tap" class="abs touch"></div>
+  <div id="drag" class="abs touch"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,k)=>a+(b-a)*k;
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const eout=k=>1-Math.pow(1-k,3);
+const CAPTURE=new URLSearchParams(location.search).has('capture');
+const SCENE=1;
+
+/* Figma iPad frames (1210×834). Pins are anchored to the street: they get the exact same shift as the photo. */
+const BG0={x:-70,y:-34}, SHIFT={x:42,y:-32};
+const PINS=[{x:595,y:439,w:55},{x:288,y:247,w:35},{x:114,y:668,w:42},{x:713,y:200,w:38},{x:931,y:316,w:54}];
+const PIN_OPEN=69, METRICS={x:1062,y:310}, FILTER_DX=141.4, CARD={x:265,y:248}, COL={x:39,y:89};
+
+const S1={tap:1.2, cardIn:[1.4,1.9], look:[1.45,2.6], cardOut:[3.6,3.95], swipe:[4.5,5.4], end:7.4};
+const S2={swipe:[1.0,1.9], end:3.6};
+const DUR=S1.end;
+
+const pinEls=PINS.map((p,i)=>{
+  const s=document.createElement('div');s.className='shell pinS abs';
+  const im=document.createElement('img');im.className='abs';im.src=`assets/pin${i}.png`;im.style.borderRadius='999px';
+  $('pins').append(s,im);return [s,im];
+});
+const tr=(el,x,y,extra='')=>{el.style.transform=`translate(${x}px,${y}px)${extra}`};
+
+function apply(t){
+  let sh=0,mx=0,colX=-300,shade=0,cardK=0,grow=0;
+  /* open a pin → look down → close the card → swipe in the nearby-pin list */
+  sh=eio(prog(t,...S1.look));
+  const close=eio(prog(t,...S1.cardOut));
+  cardK=eout(prog(t,...S1.cardIn))*(1-close);
+  grow=eout(prog(t,S1.tap,S1.tap+.35))*(1-close);
+  const sw=eio(prog(t,...S1.swipe));
+  mx=lerp(120*eio(prog(t,...S1.cardIn))*(1-close),160,sw); colX=lerp(-300,COL.x,sw); shade=sw;
+  const dx=SHIFT.x*sh, dy=SHIFT.y*sh;
+  tr($('bg'),BG0.x+dx,BG0.y+dy);
+  PINS.forEach((p,i)=>{const w=i===0?lerp(p.w,PIN_OPEN,grow):p.w, cx=p.x+p.w/2+dx, cy=p.y+p.w/2+dy;
+    pinEls[i].forEach(el=>{el.style.width=el.style.height=w+'px';tr(el,cx-w/2,cy-w/2)})});
+  tr($('metrics'),METRICS.x+mx,METRICS.y); tr($('filterS'),METRICS.x+FILTER_DX+mx,METRICS.y);
+  ['cardS','card'].forEach(id=>{$(id).style.opacity=cardK;$(id).style.visibility=cardK>0?'visible':'hidden';
+    tr($(id),CARD.x,CARD.y+(1-cardK)*12,` scale(${.97+.03*cardK})`)});
+  $('shade').style.opacity=shade; tr($('column'),colX,COL.y); $('column').style.visibility=sw>0?'visible':'hidden';
+  const tp=$('tap'),dg=$('drag');
+  tp.style.opacity=0; dg.style.opacity=0;
+  for(const [t0,x,y] of [[S1.tap,PINS[0].x+PINS[0].w/2,PINS[0].y+PINS[0].w/2],[S1.cardOut[0]-.2,CARD.x+310,CARD.y+28]]){
+    const q=prog(t,t0,t0+.45); if(t>=t0&&q<1){tp.style.opacity=1-q;tr(tp,x+(t0===S1.tap?0:SHIFT.x*sh*0),y,` scale(${.5+.7*q})`)}}
+  if(t>=S1.swipe[0]-.15&&t<S1.swipe[1]+.2){dg.style.opacity=prog(t,S1.swipe[0]-.15,S1.swipe[0])*(1-prog(t,S1.swipe[1],S1.swipe[1]+.2));tr(dg,lerp(28,330,sw),417);}
+}
+function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
+addEventListener('resize',fit);
+async function boot(){
+  await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+  fit();apply(0);window.__ready=true;if(!CAPTURE)setTimeout(play,500);
+}
+window.__seek=t=>apply(t);window.__DUR=DUR;
+let playing=false,t0=0,tNow=0;
+function play(){playing=true;t0=performance.now()-tNow*1000;requestAnimationFrame(loop)}
+function loop(now){if(!playing)return;tNow=(now-t0)/1000;if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);requestAnimationFrame(loop)}
+addEventListener('keydown',e=>{
+  if(e.code==='Space'){e.preventDefault();if(playing)playing=false;else{if(tNow>=DUR)tNow=0;play()}}
+  if(e.key==='r'||e.key==='R'){tNow=0;apply(0);playing=false;setTimeout(play,400)}
+});
+boot();
+</script>
+</body>
+</html>

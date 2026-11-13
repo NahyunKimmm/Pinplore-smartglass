@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pinplore Glass · Route</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+body{display:flex;align-items:center;justify-content:center}
+#vp{position:relative;width:1210px;height:834px;overflow:hidden;flex:none;transform-origin:center;background:#7d7570}
+.abs{position:absolute;left:0;top:0;will-change:transform,opacity}
+img{display:block}
+.bg{position:absolute;width:1210px;height:834px;object-fit:none}
+#bg{left:-309px;top:-96px;width:1815px;height:1251px}  /* image 266 @ Figma iPad frame */
+.glass{backdrop-filter:blur(26px) saturate(1.1);-webkit-backdrop-filter:blur(26px) saturate(1.1);background:rgba(0,0,0,.2);box-shadow:inset 0 0 0 .7px rgba(255,255,255,.15)}
+#headS{left:496px;top:31px;width:219px;height:64px;border-radius:999px;background:rgba(0,0,0,.3);backdrop-filter:blur(5.2px);-webkit-backdrop-filter:blur(5.2px);box-shadow:0 4px 21px rgba(0,0,0,.1)}
+#head{left:496px;top:31px;width:219px;height:64px}
+
+/* scene A: themes */
+#sceneA{position:absolute;inset:0}
+#row{position:absolute;left:430px;top:262px}
+.theme{position:absolute;width:281px;height:281px;transform-origin:50% 50%}
+.theme img{position:absolute;inset:0;width:100%;height:100%;border-radius:inherit}
+#create{left:367px;top:650px;width:475px;height:53px;border-radius:32.6px;background:rgba(255,255,255,.8);
+  backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px);box-shadow:0 0 20px rgba(0,0,0,.08)}
+#create img{width:475px;height:53px}
+
+/* scene B: generated route */
+#sceneB{position:absolute;inset:0}
+#left{left:137px;top:123px;width:332px;height:658px;border-radius:28.7px;overflow:hidden}
+#right{left:483px;top:123px;width:625px;height:658px;border-radius:24.2px;overflow:hidden}
+.pos{position:absolute}
+#map{left:0;top:65px;width:625px;height:286px}
+#routeSvg{position:absolute;left:0;top:65px;width:625px;height:286px;overflow:visible}
+#tl{position:absolute;left:19px;top:379px;width:26px;height:520px}
+#tl i{position:absolute;left:12px;top:15px;width:1.2px;height:500px;background:rgba(255,255,255,.35)}
+#tl b{position:absolute;left:0;width:26px;height:26px;border-radius:999px;background:#1c1c1c;color:#fff;font:800 12px/26px Montserrat,system-ui,sans-serif;text-align:center}
+#fly{width:318px}
+.touch{width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:999px;background:rgba(255,255,255,.35);
+  border:2px solid rgba(255,255,255,.9);box-shadow:0 0 0 1px rgba(0,0,0,.12),0 2px 10px rgba(0,0,0,.2);opacity:0;pointer-events:none;z-index:50}
+</style>
+</head>
+<body>
+<div id="vp">
+  <img id="bg" class="abs" src="assets/bg.jpg" alt="">
+
+  <div id="sceneA">
+    <div id="row"></div>
+    <div id="create" class="abs"><img src="assets/btnLabel.png" alt=""></div>
+  </div>
+
+  <div id="sceneB">
+    <div id="left" class="abs glass">
+      <img class="pos" src="assets/leftHead.png" style="left:-12px;top:-12px;width:352px" alt="">
+      <img id="c0" class="pos" src="assets/card0.png" style="width:318px" alt="">
+      <img id="c1" class="pos" src="assets/card1.png" style="width:318px" alt="">
+      <img id="c2" class="pos" src="assets/card2.png" style="width:318px" alt="">
+      <img id="c3" class="pos" src="assets/card3.png" style="width:318px" alt="">
+    </div>
+    <div id="right" class="abs glass">
+      <img id="t5" class="pos" src="assets/title5.png" style="left:7px;top:12px;width:291px" alt="">
+      <img id="t6" class="pos" src="assets/title6.png" style="left:7px;top:12px;width:292px;opacity:0" alt="">
+      <img class="pos" src="assets/navBtn.png" style="left:481px;top:7px;width:137px" alt="">
+      <img id="map" class="pos" src="assets/map.png" alt="">
+      <svg id="routeSvg" viewBox="0 0 625 286">
+        <defs><mask id="pinHoles" maskUnits="userSpaceOnUse" x="-20" y="-20" width="665" height="326"><rect x="-20" y="-20" width="665" height="326" fill="#fff"/><circle cx="69" cy="85" r="21" fill="#000"/><circle cx="412.7" cy="25.3" r="18.5" fill="#000"/><circle cx="552.7" cy="75.7" r="18.5" fill="#000"/><circle cx="202.7" cy="128.7" r="18.5" fill="#000"/><circle cx="178.7" cy="204" r="18.5" fill="#000"/><circle cx="319.3" cy="260" r="18.5" fill="#000"/><circle cx="234" cy="25" r="18.5" fill="#000"/></mask><filter id="glow" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <g mask="url(#pinHoles)"><g transform="translate(80.42 15.18)" filter="url(#glow)"><path id="r0" d="M7.60852 71.5523L111.572 104.465C118.634 106.701 122.418 114.362 119.902 121.328L100.441 175.207C98.0589 181.8 101.316 189.097 107.816 191.726L227.153 239.999C233.96 242.752 241.698 239.345 244.262 232.465L324.92 16.0965C327.425 9.37846 334.883 5.9421 341.617 8.40347L467.337 54.3564" stroke="#fff" stroke-width="5.7" stroke-linecap="round" stroke-linejoin="round" fill="none"/></g>
+        <g transform="translate(60.86 4.24)" filter="url(#glow)"><path id="r1" pathLength="1" d="M7.60852 77.2068L52.012 90.1928C55.8041 91.3018 59.8946 90.6318 63.1348 88.3709L178.108 8.14727C180.387 6.55703 183.363 8.83216 182.426 11.4486L144.073 118.574L120 185.219C117.619 191.813 120.876 199.109 127.375 201.738L246.713 250.011C253.52 252.765 261.257 249.358 263.822 242.477L344.48 26.1088C346.985 19.3908 354.443 15.9544 361.177 18.4158L486.897 64.3688" stroke="#fff" stroke-width="5.7" stroke-linecap="round" stroke-linejoin="round" fill="none" stroke-dasharray="0 1"/></g></g>
+      </svg>
+      <img class="pos" src="assets/pins.png" style="left:0;top:65px;width:625px" alt="">
+      <img id="newPin" class="pos" src="assets/newPin.png" style="left:203px;top:59px;width:76.7px;opacity:0" alt="">
+      <div id="tl"><i></i><b style="top:0">1</b><b id="tl2" style="top:225px">2</b></div>
+      <img id="oldList" class="pos" src="assets/oldList.png" style="left:45px;top:369px;width:565px" alt="">
+      <img id="newCard" class="pos" src="assets/newCard.png" style="left:45px;top:367px;width:565px;opacity:0" alt="">
+    </div>
+    <img id="fly" class="abs" src="assets/card0.png" alt="" style="opacity:0">
+  </div>
+
+  <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
+  <div id="tap" class="abs touch"></div>
+  <div id="drag" class="abs touch"></div>
+</div>
+<script>
+const $=id=>document.getElementById(id);
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const lerp=(a,b,k)=>a+(b-a)*k;
+const prog=(t,a,b)=>clamp((t-a)/(b-a));
+const eio=k=>k<.5?4*k*k*k:1-Math.pow(-2*k+2,3)/2;
+const eout=k=>1-Math.pow(1-k,3);
+const back=k=>{const c=1.4;return 1+(c+1)*Math.pow(k-1,3)+c*Math.pow(k-1,2)};
+const CAPTURE=new URLSearchParams(location.search).has('capture');
+const tr=(el,x,y,extra='')=>{el.style.transform=`translate(${x}px,${y}px)${extra}`};
+
+/* ---- scene A: theme carousel (Figma motion: row -17 → -343 → -637 → -969, focus card scales up) ---- */
+const THEME_X=[0,371,686,1000,1315,1630], ROW=[-17,-343,-637,-969];
+const STEPS=[[0.9,1.65],[1.85,2.6],[2.8,3.55]];
+const themes=THEME_X.map((x,i)=>{const d=document.createElement('div');d.className='theme';d.style.left=(x+(i===0?28:0))+'px';d.style.top='1px';
+  const im=document.createElement('img');im.src=`assets/theme${i}.png`;d.appendChild(im);$('row').appendChild(d);return d});
+const A={in:[0,.5], tap:4.15, out:[4.45,4.9]};
+
+/* ---- scene B: drag a pin card into the route (Figma motion, 6s, offset by B0) ---- */
+const B0=4.6;
+const B={in:[0,.45], hold:1.07, fly:[1.39,2.35], land:2.42, listUp:[1.51,1.77], shift:[1.85,2.4], oldOut:[2.57,2.87], title:[3.33,3.62], pin:[3.33,3.73], draw:[3.8,4.65], end:6.6};
+const DUR=B0+B.end;
+const LIST=[0,266,393,613], CARD_FROM={x:158,y:196}, CARD_TO={x:537,y:502};
+
+function apply(t){
+  /* scene A */
+  const aIn=eout(prog(t,...A.in)), aOut=prog(t,...A.out);
+  $('sceneA').style.opacity=aIn*(1-aOut); $('sceneA').style.visibility=aOut<1?'visible':'hidden';
+  let f=0; STEPS.forEach(([a,b])=>{f+=eio(prog(t,a,b))});
+  const fi=Math.floor(f), fk=f-fi; const rowX=lerp(ROW[Math.min(fi,3)],ROW[Math.min(fi+1,3)],fk);
+  tr($('row'),rowX,0);
+  themes.forEach((d,i)=>{const near=clamp(1-Math.abs(i-f));d.style.transform=`scale(${1+.18*near})`;d.style.opacity=.5+.5*near;d.style.zIndex=Math.round(near*10)});
+  $('create').style.transform=`scale(${1-.03*Math.sin(Math.PI*prog(t,A.tap,A.tap+.3))})`;
+
+  /* scene B */
+  const tb=t-B0;
+  const bIn=eout(prog(tb,...B.in));
+  $('sceneB').style.opacity=bIn; $('sceneB').style.visibility=bIn>0?'visible':'hidden';
+  const up=-281*eio(prog(tb,...B.listUp));
+  LIST.forEach((y,i)=>{const el=$('c'+i); tr(el,9,61+y+(i?up:0)); if(!i) el.style.opacity=1-prog(tb,B.hold,B.hold+.22)});
+  // floating copy: lifted on pinch, carried to the itinerary
+  const fk2=eio(prog(tb,...B.fly)), lift=prog(tb,B.hold,B.hold+.22);
+  const fx=lerp(CARD_FROM.x,CARD_TO.x,fk2), fy=lerp(CARD_FROM.y,CARD_TO.y,fk2)-Math.sin(fk2*Math.PI)*40;
+  $('fly').style.opacity=lift*(1-prog(tb,B.land,B.land+.12)); tr($('fly'),fx-9,fy-12,` scale(${1+.04*lift})`);
+  // itinerary makes room, new card lands at the top
+  const sh=eio(prog(tb,...B.shift));
+  tr($('oldList'),0,-6.7+260*sh); tr($('tl2'),0,260*sh);
+  $('newCard').style.opacity=prog(tb,B.land,B.land+.15);
+  // route regenerates
+  $('r0').style.opacity=1-eio(prog(tb,...B.oldOut));
+  $('r1').setAttribute('stroke-dasharray',`${eio(prog(tb,...B.draw))} 1`);
+  const ti=eio(prog(tb,...B.title)); $('t5').style.opacity=1-ti; $('t6').style.opacity=ti;
+  const pk=prog(tb,...B.pin); $('newPin').style.opacity=clamp(pk*1.6); $('newPin').style.transform=`scale(${pk<=0?0.6:pk<.6?lerp(.6,1.12,pk/.6):lerp(1.12,1,(pk-.6)/.4)})`;
+
+  /* touch indicators (only during actions) */
+  const tp=$('tap'),dg=$('drag'); tp.style.opacity=0; dg.style.opacity=0;
+  for(const [a,b] of STEPS){ if(t>=a-.15&&t<b+.2){const k=eio(prog(t,a,b)); dg.style.opacity=prog(t,a-.15,a)*(1-prog(t,b,b+.2)); tr(dg,lerp(760,520,k),402);} }
+  const q=prog(t,A.tap,A.tap+.45); if(t>=A.tap&&q<1){tp.style.opacity=1-q;tr(tp,604,676,` scale(${.5+.7*q})`)}
+  if(tb>=B.hold-.1&&tb<B.land+.25){dg.style.opacity=prog(tb,B.hold-.1,B.hold)*(1-prog(tb,B.land,B.land+.25)); tr(dg,fx+150,fy+120);}
+}
+function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
+addEventListener('resize',fit);
+async function boot(){
+  await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
+  fit();apply(0);window.__ready=true;if(!CAPTURE)setTimeout(play,500);
+}
+window.__seek=t=>apply(t);window.__DUR=DUR;
+let playing=false,t0=0,tNow=0;
+function play(){playing=true;t0=performance.now()-tNow*1000;requestAnimationFrame(loop)}
+function loop(now){if(!playing)return;tNow=(now-t0)/1000;if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);requestAnimationFrame(loop)}
+boot();
+</script>
+</body>
+</html>
