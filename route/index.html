@@ -134,7 +134,7 @@ function apply(t){
   $('sceneB').style.opacity=bIn; $('sceneB').style.visibility=bIn>0?'visible':'hidden';
   const up=-266*eio(prog(tb,...B.listUp));
   const col=eio(prog(tb,...B.listUp));
-  LIST.forEach((y,i)=>{const el=$('c'+i); if(!i){el.style.transformOrigin='50% 0';tr(el,9,61+y,` scaleY(${1-col})`);el.style.opacity=1-prog(tb,B.hold,B.hold+.22);} else tr(el,9,61+y+up)});
+  LIST.forEach((y,i)=>{const el=$('c'+i); if(!i){tr(el,9,61+y);el.style.clipPath=`inset(0 0 ${col*100}% 0 round 22px)`;el.style.opacity=1-prog(tb,B.hold,B.hold+.22);} else tr(el,9,61+y+up)});
   // floating copy: lifted on pinch, carried to the itinerary
   const fk2=eio(prog(tb,...B.fly)), lift=prog(tb,B.hold,B.hold+.22);
   const fx=lerp(CARD_FROM.x,CARD_TO.x,fk2), fy=lerp(CARD_FROM.y,CARD_TO.y,fk2)-Math.sin(fk2*Math.PI)*40;
@@ -144,7 +144,7 @@ function apply(t){
   tr($('oldList'),0,-6.7+260*sh); tr($('tl2'),0,260*sh);
   const ex=eio(prog(tb,...B.expand)), nc=$('newCard');
   nc.style.opacity=prog(tb,B.land-.06,B.land+.02);
-  nc.style.transformOrigin='50% 0'; nc.style.transform=`scaleY(${lerp(.12,1,ex)})`; nc.style.clipPath='none';
+  nc.style.transform='none'; nc.style.clipPath=`inset(0 0 ${lerp(85,0,ex)}% 0 round 22px)`;
   // route regenerates
   $('r0').style.opacity=1-eio(prog(tb,...B.oldOut));
   $('r1').setAttribute('stroke-dasharray',`${eio(prog(tb,...B.draw))} 1`);
