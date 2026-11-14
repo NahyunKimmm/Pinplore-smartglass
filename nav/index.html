@@ -208,7 +208,10 @@ function apply(t){
 
   /* navigation starts → background blur clears (stays clear while navigating) */
   $('bgSharp').style.opacity=eio(prog(t,T.f12Out[0],T.f3In[1]));
-  $('bgv').style.opacity=$('bgSharp').style.opacity; vsync($('bgv'),t-T.f3In[0]);
+  /* the footage's own first frame is the background from the start (blurred like bg_blur), so there's no
+     framing jump; it sharpens as navigation starts and only then plays */
+  {const k=+$('bgSharp').style.opacity; $('bgv').style.opacity=1; $('bgv').style.filter=k>=1?'none':`blur(${lerp(16,0,k)}px)`;
+   $('bgv').style.transform=`scale(${lerp(1.04,1,k)})`; vsync($('bgv'),t-T.f3In[1]);}
 
   /* drag circle during the scroll */
   const dOn=prog(t,T.scroll[0]-.15,T.scroll[0])*(1-prog(t,T.scroll[1],T.scroll[1]+.2));
