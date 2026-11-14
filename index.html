@@ -95,8 +95,8 @@ addEventListener('message',e=>{const i=frames.findIndex(f=>f.contentWindow===e.s
 const call=(i,k,...a)=>{try{const fn=frames[i].contentWindow[k];if(typeof fn==='function')return fn(...a)}catch(e){
   if(k==='__t')return MSG[i].t; try{frames[i].contentWindow.postMessage({pp:k.slice(2)},'*')}catch(_){} }};
 /* load the first flow first, the rest right after so the opener isn't competing for bandwidth */
-frames[0].src=FLOWS[0].src+'?embed=1';
-FLOWS[0].ready.then(()=>frames.forEach((el,i)=>{if(i)el.src=FLOWS[i].src+'?embed=1'}));
+frames[0].src=FLOWS[0].src+'?embed=1&v=1794617508';
+FLOWS[0].ready.then(()=>frames.forEach((el,i)=>{if(i)el.src=FLOWS[i].src+'?embed=1&v=1794617508'}));
 
 tabs.forEach((b,i)=>{b.style.left=(6.2+51.65*i)+'px';b.onclick=e=>{e.stopPropagation();go(i,true);showUI()}});
 function placeHud(){const k=Math.min(innerWidth/1210,innerHeight/834),ox=(innerWidth-1210*k)/2,oy=(innerHeight-834*k)/2;
