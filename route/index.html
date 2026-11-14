@@ -212,9 +212,10 @@ const B={in:[0,.12], hold:1.07+BI, fly:[1.39+BI,2.3+BI], land:2.3+BI, listUp:[1.
 const POP={left:0, right:.08, leftHead:.18, c0:.26, c1:.34, c2:.42, c3:.5, t5:.22, nb:.3, map:.34, pins:.5, r0:[.56,.95], tl:.62, oldList:.68};
 const pop=(tb,s)=>eout(prog(tb,s,s+.32));
 const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
-const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:14.1};
+const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:15.7};
 /* scene D (same clock as C): arrive → navigation closes → the pin's place → open the Tip pin */
-const D={swap:[4.4,5.3], arrive:6.0, navOff:[7.5,8.0], head:[7.9,8.4], pins:8.1, tap:9.6, cardIn:[9.8,10.35], look:[9.9,11.1]};
+/* walk the whole clip first (it ends at 6.3s), then the place takes over */
+const D={swap:[6.0,6.9], arrive:7.6, navOff:[9.1,9.6], head:[9.5,10.0], pins:9.7, tap:11.2, cardIn:[11.4,11.95], look:[11.5,12.7]};
 const WP=[{x:569,y:224,w:78,s:'tip',op:1},{x:177,y:278,w:35,s:'scn',op:.7},{x:529,y:672,w:53,s:'per',op:.7},{x:390,y:478,w:54,s:'inf',op:.7}];
 const WCARD={dx:106,dy:-78};   // Figma 새로 추가2: card at pin + (106,-78)
 const wpEls=WP.map(p=>{const sh=document.createElement('div');sh.className='wpS';sh.style.width=sh.style.height=p.w+'px';
