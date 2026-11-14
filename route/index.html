@@ -323,9 +323,9 @@ function apply(t){
   {const walk1=prog(tc,2.9,6.0), turned=tc>=D.swap[0]+.45, walk2=prog(tc,D.swap[0]+1.6,D.arrive);
    let txt, ic;
    if(!turned){txt=`After ${(1.2-.1*walk1).toFixed(1)}km`;ic='icTurn'}   // next manoeuvre: turn right in 1.2km
-   else {txt=`After ${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic='icUp'}   // after the cut: turn left at the wall in 0.5m (icUp = left-turn icon)
+   else {txt=`${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic=null}   // last stretch: no more turns, distance only
    if($('fTxt').textContent!==txt)$('fTxt').textContent=txt;
-   ['icTurn','icUp'].forEach(id=>$(id).style.opacity=id===ic?1:0);
+   ['icTurn','icUp'].forEach(id=>$(id).style.opacity=id===ic?1:0); $('fChip').querySelector('.ic').style.display=ic?'':'none';
    const ac=eout(prog(tc,D.arrive+.2,D.arrive+.65))*(1-nOff), aw=$('arrWrap');
    aw.style.opacity=ac; aw.style.visibility=ac>0?'visible':'hidden'; $('arrChip').style.transform=`translateX(-50%) translateY(${(1-ac)*14}px)`;}
   [...$('sceneC').children].forEach(el=>{if(el.id!=='navBg') el.style.opacity=ui*(1-nOff)});
