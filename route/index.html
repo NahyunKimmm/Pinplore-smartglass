@@ -83,9 +83,13 @@ img{display:block}
 /* floor guidance card: base art + live chip (so distance can count down and switch to Arrived) */
 #fChip{position:absolute;left:50%;top:23.2px;transform:translateX(-50%);height:46.9px;padding:0 16.5px;display:flex;align-items:center;gap:8.3px;
   border-radius:999px;background:#1c1c1c;font:700 22px/1 Manrope,sans-serif;color:#fff;white-space:nowrap}
-#fChip svg{width:20px;height:22px;flex:none}
-#fChip .ic{position:relative;width:20px;height:22px;flex:none}
+#fChip svg{width:19.3px;height:22.1px;flex:none}
+#fChip .ic{position:relative;width:19.3px;height:22.1px;flex:none}
 #fChip .ic svg{position:absolute;inset:0}
+#arrWrap{position:absolute;left:0;top:0;width:1210px;height:834px;mix-blend-mode:screen;pointer-events:none;opacity:0;visibility:hidden}
+#arrChip{position:absolute;left:50%;top:741.1px;transform:translateX(-50%);height:46.9px;padding:0 16.5px;display:flex;align-items:center;gap:8.3px;
+  border-radius:999px;background:#1c1c1c;font:700 22px/1 Manrope,sans-serif;color:#fff;white-space:nowrap}
+#arrChip svg{width:19.3px;height:22.1px;flex:none}
 /* ---------- scene D: at the pin (Figma 새로 추가1 → 2) ---------- */
 #sceneD{position:absolute;inset:0;visibility:hidden}
 #wall{position:absolute;left:0;top:0;width:1210px;height:887px;transform-origin:50% 40%}
@@ -168,14 +172,14 @@ img{display:block}
       backdrop-filter:blur(25px);-webkit-backdrop-filter:blur(25px);box-shadow:inset 0 0 0 .7px rgba(255,255,255,.15);font:600 19px/1 Montserrat,system-ui,sans-serif;color:#fff;white-space:nowrap">
       <img src="assets/pillIcon.png" style="width:28px;height:44px;object-fit:contain" alt="">Ceramic Face Wall<span id="pillT" style="font-weight:500;opacity:.7;margin-left:6px">2 min</span></div>
   </div>
+  <div id="arrWrap"><div id="arrChip"><svg viewBox="0 0 20 23"><path d="M2.6 12.2L7.6 17.2L17 6.6" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg><span>Arrived</span></div></div>
   <!-- floor card lives beside the video (not inside sceneC) so its Figma screen blend has the footage to blend with -->
   <div id="floorWrap" style="position:absolute;left:473px;top:543px;width:264px;height:245px;mix-blend-mode:screen;opacity:0;visibility:hidden">
     <img src="assets/floor_plain.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="" id="floorImgR">
     <img id="fArrow" src="assets/floor_base.png" alt="" style="position:absolute;left:0;top:0;width:264px;height:245px;border-radius:25.45px">
     <div id="fChip"><span class="ic">
-      <svg id="icTurn" viewBox="0 0 20 22" style="opacity:0"><path d="M4 20V11.5Q4 7 8.5 7H15" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M12 2.8L16.6 7 12 11.2" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <svg id="icUp" viewBox="0 0 20 22"><path d="M10 20V4M4.6 9.2L10 3.6l5.4 5.6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <svg id="icOk" viewBox="0 0 20 22" style="opacity:0"><path d="M3.6 11.6l4.4 4.4 8.4-9" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <svg id="icTurn" viewBox="0 0 20 23" style="opacity:0"><path d="M2.755 18.7435V6.08789H13.4636" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.3047 6.08789L9.56958 0.467324V11.7085L19.3047 6.08789Z" fill="#fff"/></svg>
+      <svg id="icUp" viewBox="0 0 20 23"><path d="M9.65 21.3V9.4" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" fill="none"/><path d="M9.65 0.8L3.95 10.6H15.35Z" fill="#fff"/></svg></span>
       <span id="fTxt">1.2km</span></div>
   </div>
   <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
@@ -318,15 +322,15 @@ function apply(t){
   /* guidance follows the walk: turn ahead while walking with the dog, then straight to the wall */
   {const walk1=prog(tc,2.9,6.0), turned=tc>=D.swap[0]+.45, walk2=prog(tc,D.swap[0]+1.6,D.arrive);
    let txt, ic;
-   if(tc>=D.arrive){txt='Arrived';ic='icOk'}
-   else if(!turned){txt=`${(1.2-.1*walk1).toFixed(1)}km`;ic='icUp'}            // setting off: the whole 1.2km route
+   if(!turned){txt=`${(1.2-.1*walk1).toFixed(1)}km`;ic='icUp'}            // setting off: the whole 1.2km route
    else {txt=`${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic='icUp'}            // after the cut: the last 0.5m to the wall
    if($('fTxt').textContent!==txt)$('fTxt').textContent=txt;
-   ['icTurn','icUp','icOk'].forEach(id=>$(id).style.opacity=id===ic?1:0);
-   $('fArrow').style.opacity=1-arr;}
+   ['icTurn','icUp'].forEach(id=>$(id).style.opacity=id===ic?1:0);
+   const ac=eout(prog(tc,D.arrive+.2,D.arrive+.65))*(1-nOff), aw=$('arrWrap');
+   aw.style.opacity=ac; aw.style.visibility=ac>0?'visible':'hidden'; $('arrChip').style.transform=`translateX(-50%) translateY(${(1-ac)*14}px)`;}
   [...$('sceneC').children].forEach(el=>{if(el.id!=='navBg') el.style.opacity=ui*(1-nOff)});
   
-  $('floorWrap').style.transform=`translateY(${(1-ui)*14}px)`; {const fo=ui*cIn*(1-nOff); $('floorWrap').style.opacity=fo; $('floorWrap').style.visibility=fo>0?'visible':'hidden';}
+  $('floorWrap').style.transform=`translateY(${(1-ui)*14}px)`; {const fo=ui*cIn*(1-arr); $('floorWrap').style.opacity=fo; $('floorWrap').style.transform=`translateY(${(1-ui)*14}px) scale(${lerp(1,.94,arr)})`; $('floorWrap').style.visibility=fo>0?'visible':'hidden';}
   $('nb').style.transform=`scale(${1-.04*Math.sin(Math.PI*prog(tc,C.tap,C.tap+.3))})`;
 
   /* scene D: arrive at the pin's place, open it */
