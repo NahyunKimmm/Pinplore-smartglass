@@ -105,10 +105,11 @@ function apply(t){
   wv.style.transform=`translate(${BG0.x+VID.x}px,${BG0.y+VID.y}px) rotate(${VID.rot}deg)`;
   syncWalk(t);
   /* card grows out of its pin and folds back into it (window-close motion) */
-  const [p0x,p0y]=pinAt(vt,0), ox=p0x-CARD.x, oy=p0y-CARD.y;
+  /* the card is anchored to its pin: it keeps a fixed offset from the tracked pin (28px gap, set at pin rest 622.4,466.5) */
+  const [p0x,p0y]=pinAt(vt,0), cX=CARD.x+(p0x-622.43), cY=CARD.y+(p0y-466.51), ox=p0x-cX, oy=p0y-cY;
   const k=Math.max(0,Math.min(1,(close-0)/1)), sc=lerp(.82,1,open)*lerp(1,.06,k), op=open*(1-prog(k,.55,1));
   ['cardS','card'].forEach(id=>{const el=$(id); el.style.opacity=op; el.style.visibility=op>0?'visible':'hidden';
-    el.style.transformOrigin=`${ox}px ${oy}px`; tr(el,CARD.x,CARD.y,` scale(${sc})`)});
+    el.style.transformOrigin=`${ox}px ${oy}px`; tr(el,cX,cY,` scale(${sc})`)});
   $('shade').style.opacity=shade; tr($('column'),colX,COL.y); $('column').style.visibility=sw>0?'visible':'hidden';
   const tp=$('tap'),dg=$('drag');
   tp.style.opacity=0; dg.style.opacity=0;
