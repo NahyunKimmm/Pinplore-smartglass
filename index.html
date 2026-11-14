@@ -73,7 +73,7 @@ body{background:var(--bg);color:var(--fg);font-family:var(--body);overflow:hidde
 const FLOWS=[
   {src:'explore/index.html',dur:16.6},
   {src:'pin/index.html',dur:13.6},
-  {src:'route/index.html',dur:22.7},
+  {src:'route/index.html',dur:30.3},
   {src:'nav/index.html',dur:8.6},
 ];
 const HOLD=1.4, OUT=.55, IN=.75;
@@ -90,7 +90,7 @@ const frames=FLOWS.map((f,i)=>{const el=document.createElement('iframe');el.titl
   return el});
 const MSG=FLOWS.map(()=>({t:0,head:1,ready:false}));
 addEventListener('message',e=>{const i=frames.findIndex(f=>f.contentWindow===e.source),d=e.data;
-  if(i<0||!d||!('ppT' in d))return; MSG[i].t=d.ppT;MSG[i].head=d.ppHead;if(d.ppDur)FLOWS[i].dur=d.ppDur;if(d.ppReady&&!MSG[i].ready){MSG[i].ready=true;MSG[i].res?.()}});
+  if(i<0||!d||!('ppT' in d))return; MSG[i].t=d.ppT;MSG[i].tab=d.ppTab;MSG[i].head=d.ppHead;if(d.ppDur)FLOWS[i].dur=d.ppDur;if(d.ppReady&&!MSG[i].ready){MSG[i].ready=true;MSG[i].res?.()}});
 /* direct call when same-origin; otherwise fall back to postMessage */
 const call=(i,k,...a)=>{try{const fn=frames[i].contentWindow[k];if(typeof fn==='function')return fn(...a)}catch(e){
   if(k==='__t')return MSG[i].t; try{frames[i].contentWindow.postMessage({pp:k.slice(2)},'*')}catch(_){} }};
@@ -102,7 +102,8 @@ tabs.forEach((b,i)=>{b.style.left=(6.2+51.65*i)+'px';b.onclick=e=>{e.stopPropaga
 function placeHud(){const k=Math.min(innerWidth/1210,innerHeight/834),ox=(innerWidth-1210*k)/2,oy=(innerHeight-834*k)/2;
   $('hud').style.transform=`translate(${ox}px,${oy}px) scale(${k})`}
 addEventListener('resize',placeHud);placeHud();
-function setTab(i){tabs.forEach((b,j)=>b.setAttribute('aria-current',j===i));$('knob').style.transform=`translateX(${51.65*i}px)`}
+let shownTab=-1, target=0;
+function setTab(i){if(i===shownTab)return;shownTab=i;tabs.forEach((b,j)=>b.setAttribute('aria-current',j===i));$('knob').style.transform=`translateX(${51.65*i}px)`}
 
 /* scene handoff: the outgoing view loses focus and drifts back, the next one pulls into focus */
 const ease='cubic-bezier(.4,0,.2,1)';
@@ -119,7 +120,7 @@ function embed(f){try{const d=f.contentDocument,s=d.createElement('style');
   d.addEventListener('pointerdown',()=>{showUI();wake()})}catch(e){}}
 
 async function go(i,user){
-  i=(i+FLOWS.length)%FLOWS.length; const my=++seq; setTab(i);
+  i=(i+FLOWS.length)%FLOWS.length; const my=++seq; target=i; setTab(i);
   if(user&&paused) setPaused(false);
   await FLOWS[i].ready; if(my!==seq) return;            // a newer tap won: drop this one
   const prev=idx; idx=i; endAt=0;
@@ -137,6 +138,7 @@ function setPaused(p){paused=p;$('ppT').textContent=p?'Play':'Pause';$('pause').
 /* progress + auto-advance follow the flow's own clock, so pause holds both */
 function tick(){
   if(idx>=0){const f=FLOWS[idx],t=call(idx,'__t')??0;
+    {let hint; try{const fn=frames[idx].contentWindow.__tab; hint=typeof fn==='function'?fn():undefined}catch(e){hint=MSG[idx].tab} setTab(typeof hint==='number'&&target===idx?hint:target);}
     $('prog').style.width=Math.min(100,t/f.dur*100)+'%';
     if(!paused&&t>=f.dur){if(!endAt)endAt=performance.now();else if(performance.now()-endAt>HOLD*1000){endAt=0;go(idx+1)}}
     let o=1; try{const d=frames[idx].contentDocument,h=d.getElementById('head')||d.getElementById('headA');
