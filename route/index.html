@@ -320,7 +320,7 @@ function apply(t){
    let txt, ic;
    if(tc>=D.arrive){txt='Arrived';ic='icOk'}
    else if(!turned){txt=`${(1.2-.1*walk1).toFixed(1)}km`;ic='icUp'}            // setting off: the whole 1.2km route
-   else {txt=`${Math.max(.5,5-4.5*walk2).toFixed(1)}m`;ic='icUp'}             // after the cut: the last few metres to the wall
+   else {txt=`${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic='icUp'}            // after the cut: the last 0.5m to the wall
    if($('fTxt').textContent!==txt)$('fTxt').textContent=txt;
    ['icTurn','icUp','icOk'].forEach(id=>$(id).style.opacity=id===ic?1:0);
    $('fArrow').style.opacity=1-arr;}
