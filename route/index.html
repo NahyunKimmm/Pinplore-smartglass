@@ -106,6 +106,13 @@ img{display:block}
   <img id="bg" class="abs" src="assets/bg.jpg" alt="" style="display:none">
   <video id="navV" muted playsinline preload="auto" style="position:absolute;left:0;top:0;width:1210px;height:834px;object-fit:cover;transform-origin:50% 50%"><source src="assets/dogwalk_hevc.mp4" type='video/mp4; codecs="hvc1"'><source src="assets/dogwalk.mp4" type="video/mp4"><source src="assets/dogwalk.webm" type="video/webm"></video>
   <img id="navBlur" src="assets/dog_blur.jpg" class="abs" alt="" style="width:1210px;height:834px;transform-origin:50% 50%">
+  <div id="sceneD">
+    <img id="wall" src="assets/wall.jpg" alt="">
+    <div id="wPins"></div>
+    <div id="wRailS" class="abs" style="background:rgba(255,255,255,0)"></div><img id="wRail" class="abs" src="assets/w_rail.png" alt="">
+    <div id="wMetrics" class="abs"><div><b>2km</b><small>Total Range</small></div><div><b>32</b><small>Impact Pins</small></div><div><b>Cold</b><small>Total Range</small></div></div>
+    <div id="wCardS" class="abs"></div><img id="wCard" class="abs" src="assets/w_card.png" alt="">
+  </div>
 
   <div id="sceneA">
     <div id="row"></div>
@@ -167,13 +174,6 @@ img{display:block}
     <div id="arrive"><div class="chip"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.4" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Arrived</div>
       <div class="ok"><svg viewBox="0 0 76 76"><path d="M24 39.5l9.5 9.5L53 28.5" stroke="#3a64f0" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
   </div>
-  <div id="sceneD">
-    <img id="wall" src="assets/wall.jpg" alt="">
-    <div id="wPins"></div>
-    <div id="wRailS" class="abs" style="background:rgba(255,255,255,0)"></div><img id="wRail" class="abs" src="assets/w_rail.png" alt="">
-    <div id="wMetrics" class="abs"><div><b>2km</b><small>Total Range</small></div><div><b>32</b><small>Impact Pins</small></div><div><b>Cold</b><small>Total Range</small></div></div>
-    <div id="wCardS" class="abs"></div><img id="wCard" class="abs" src="assets/w_card.png" alt="">
-  </div>
   <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
   <div id="tap" class="abs touch"></div>
   <div id="drag" class="abs touch"></div>
@@ -212,9 +212,9 @@ const B={in:[0,.12], hold:1.07+BI, fly:[1.39+BI,2.3+BI], land:2.3+BI, listUp:[1.
 const POP={left:0, right:.08, leftHead:.18, c0:.26, c1:.34, c2:.42, c3:.5, t5:.22, nb:.3, map:.34, pins:.5, r0:[.56,.95], tl:.62, oldList:.68};
 const pop=(tb,s)=>eout(prog(tb,s,s+.32));
 const C0=B0+B.end-1.4;                 // tap Navigate after the new route is drawn
-const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:13.8};
+const C={tap:0, out:[.25,.7], in:[.4,.9], focus:[.4,1.6], ui:[1.3,1.8], end:14.1};
 /* scene D (same clock as C): arrive → navigation closes → the pin's place → open the Tip pin */
-const D={arrive:5.3, navOff:[6.9,7.4], swap:[7.1,8.1], head:[7.6,8.1], pins:7.9, tap:9.3, cardIn:[9.5,10.05], look:[9.6,10.8]};
+const D={swap:[4.4,5.3], arrive:6.0, navOff:[7.5,8.0], head:[7.9,8.4], pins:8.1, tap:9.6, cardIn:[9.8,10.35], look:[9.9,11.1]};
 const WP=[{x:569,y:224,w:78,s:'tip',op:1},{x:177,y:278,w:35,s:'scn',op:.7},{x:529,y:672,w:53,s:'per',op:.7},{x:390,y:478,w:54,s:'inf',op:.7}];
 const WCARD={dx:106,dy:-78};   // Figma 새로 추가2: card at pin + (106,-78)
 const wpEls=WP.map(p=>{const sh=document.createElement('div');sh.className='wpS';sh.style.width=sh.style.height=p.w+'px';
@@ -297,7 +297,7 @@ function apply(t){
   /* scene C: navigation to the first pin on the route */
   const tc=t-C0, cOut=eio(prog(tc,...C.out)), cIn=eout(prog(tc,...C.in));
   if(tc>0){ $('sceneB').style.opacity=bIn*(1-cOut); }
-  const hd=eout(prog(tc,...D.head)); const head=Math.max(1-cOut,hd); $('headS').style.opacity=head; $('head').style.opacity=head; TABHINT=hd>.5?0:undefined;
+  const hd=eout(prog(tc,...D.head)); const head=Math.max(1-cOut,hd); $('headS').style.opacity=head; $('head').style.opacity=head; 
   $('sceneC').style.opacity=cIn; $('sceneC').style.visibility=cIn>0?'visible':'hidden';
   /* background pulls into focus: blur clears while the view zooms out to rest */
   const fz=eout(prog(tc,...C.focus)), ui=eout(prog(tc,...C.ui));
@@ -305,7 +305,7 @@ function apply(t){
   $('navV').style.filter='none'; $('navV').style.transform=$('navBg').style.transform; $('navBlur').style.transform=$('navBg').style.transform; $('navBlur').style.opacity=1-fz; $('navBlur').style.visibility=fz<1?'visible':'hidden'; vsync($('navV'),tc-C.ui[0]);   // hold the first frame through the focus pull; play once navigation is on
   const nOff=eio(prog(tc,...D.navOff)), arr=eout(prog(tc,D.arrive,D.arrive+.45));
   [...$('sceneC').children].forEach(el=>{if(el.id!=='navBg') el.style.opacity=ui*(1-nOff)});
-  $('pillT').textContent=tc>=D.arrive?'Arrived':'2 min'; $('pillT').style.opacity=tc>=D.arrive?1:.7;
+  
   $('floorImgR').style.opacity=1-arr; $('arrive').style.opacity=arr;
   $('arrive').querySelector('.ok').style.transform=`scale(${arr<1?lerp(.5,1,eout(arr))*(1+.12*Math.sin(Math.PI*arr)):1})`;
   $('floorWrap').style.transform=`translateY(${(1-ui)*14}px)`; {const fo=ui*cIn*(1-nOff); $('floorWrap').style.opacity=fo; $('floorWrap').style.visibility=fo>0?'visible':'hidden';}
@@ -317,8 +317,11 @@ function apply(t){
    $('wall').style.filter=sw<1?`blur(${lerp(14,0,sw)}px)`:'none'; const dy=53*lk;
    $('wall').style.transform=`translate(0px,${-53+dy}px) scale(${lerp(1.06,1,sw)})`;
    $('navV').style.visibility=sw>=1?'hidden':'visible';
-   WP.forEach((p,i)=>{const k=eout(prog(tc,D.pins+i*.09,D.pins+.35+i*.09)), o=(i===0?1:lerp(p.op,.5,lk))*k;
-     wpEls[i].forEach(el=>{el.style.opacity=o;tr(el,p.x,p.y+dy,` scale(${lerp(.6,1,k)})`)})});
+   WP.forEach((p,i)=>{const k=i===0?eout(prog(tc,D.swap[0]+.5,D.swap[1]+.2)):eout(prog(tc,D.pins+i*.09,D.pins+.35+i*.09)), o=(i===0?1:lerp(p.op,.5,lk))*k;
+     /* destination pin: a slow, slight breathing pulse until it's tapped */
+     const br=i===0?(1-prog(tc,D.tap,D.tap+.25))*k*(.5-.5*Math.cos(2*Math.PI*Math.max(0,tc-D.swap[0])/1.15)):0;
+     wpEls[i].forEach(el=>{el.style.opacity=o;tr(el,p.x,p.y+dy,` scale(${lerp(.6,1,k)*(1+.07*br)})`)});
+     if(i===0) wpEls[0][1].style.boxShadow=`0 6px 16px rgba(0,0,0,.18), 0 0 ${10+18*br}px ${2+5*br}px rgba(244,140,255,${.25+.35*br})`;});
    const ri=eout(prog(tc,D.pins+.2,D.pins+.7)); ['wMetrics','wRailS','wRail'].forEach(id=>$(id).style.opacity=ri);
    const p0=WP[0], px=p0.x, py=p0.y+dy, cx=px+WCARD.dx, cy=py+WCARD.dy;
    ['wCardS','wCard'].forEach(id=>{const el=$(id); el.style.opacity=op; el.style.visibility=op>0?'visible':'hidden';
