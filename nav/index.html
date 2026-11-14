@@ -58,7 +58,7 @@ img{display:block}
   backdrop-filter:blur(26.7px);-webkit-backdrop-filter:blur(26.7px);box-shadow:inset 0 0 0 .68px rgba(255,255,255,.15)}
 #pillImg{left:892.5px;top:17.4px;width:212px;height:67px}
 #floorS{display:none}
-/* Figma screen blend is baked into floor_scr.png (iOS can't blend over <video>) */
+#gFloor{mix-blend-mode:screen}
 #floorImg{left:828px;top:553px;width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
 
 /* ---- frame 4 ---- */
@@ -134,7 +134,7 @@ body.capture #ctl{display:none}
 </div>
 
   <!-- Frame 3 : walking navigation -->
-  <div class="grp" id="gFloor"><div id="floorS" class="shell abs"></div><div id="floorImg" class="abs lay"><img src="assets/floor_scr.png" alt=""></div></div>
+  <div class="grp" id="gFloor"><div id="floorS" class="shell abs"></div><div id="floorImg" class="abs lay"><img src="assets/floor.png" alt=""></div></div>
   <div class="grp" id="gTop3"><div id="headB" class="shell abs"></div><img id="headBimg" class="abs" src="assets/head3.png" alt="">
   <div id="pillS" class="shell abs"></div><div id="pillImg" class="abs lay"><img src="assets/pill.png" alt=""></div></div>
 
