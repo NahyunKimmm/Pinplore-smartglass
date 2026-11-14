@@ -65,6 +65,7 @@ function tapAt(t){
 let built=false;
 function apply(t){
   if(!built)return;
+  vsync($('bgv'),t);
   const st=(el,css)=>Object.assign(el.style,css);
 
   /* category card */
@@ -138,12 +139,17 @@ async function boot(){
 }
 window.__seek=t=>apply(t);window.__DUR=DUR;
 let playing=false,t0=0,tNow=0;
+/* footage preview: video streamed from Higgsfield, slaved to the flow clock (image stays underneath as fallback) */
+function vsync(v,want){ if(!v||!v.duration)return; want=Math.max(0,Math.min(v.duration-.05,want));
+  if(playing&&want>0&&want<v.duration-.05){ if(v.paused){v.currentTime=want;v.play().catch(()=>{})} else if(Math.abs(v.currentTime-want)>.25) v.currentTime=want; }
+  else { if(!v.paused)v.pause(); if(Math.abs(v.currentTime-want)>.04) v.currentTime=want; } }
+
 let raf=0;
 function play(){cancelAnimationFrame(raf);playing=true;t0=performance.now()-tNow*1000;raf=requestAnimationFrame(loop)}
 function loop(now){if(!playing)return;tNow=Math.max(0,(now-t0)/1000);if(tNow>=DUR){tNow=DUR;apply(DUR);playing=false;return}apply(tNow);raf=requestAnimationFrame(loop)}
 /* shell control: the showcase drives playback in persistent frames */
 window.__restart=()=>{playing=false;cancelAnimationFrame(raf);measure();tNow=0;apply(0);play()};
-window.__pause=()=>{playing=false;cancelAnimationFrame(raf)};
+window.__pause=()=>{playing=false;cancelAnimationFrame(raf);try{$('bgv').pause()}catch(e){}};
 window.__resume=()=>{if(!playing&&tNow<DUR)play()};
 window.__t=()=>tNow;
 /* fallback channel when the shell can't reach this frame directly (opened from file://) */
