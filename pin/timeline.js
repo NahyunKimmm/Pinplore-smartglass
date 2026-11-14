@@ -140,9 +140,12 @@ async function boot(){
 window.__seek=t=>apply(t);window.__DUR=DUR;
 let playing=false,t0=0,tNow=0;
 /* footage preview: video streamed from Higgsfield, slaved to the flow clock (image stays underneath as fallback) */
-function vsync(v,want){ if(!v||!v.duration)return; want=Math.max(0,Math.min(v.duration-.05,want));
-  if(playing&&want>0&&want<v.duration-.05){ if(v.paused){v.currentTime=want;v.play().catch(()=>{})} else if(Math.abs(v.currentTime-want)>.25) v.currentTime=want; }
-  else { if(!v.paused)v.pause(); if(Math.abs(v.currentTime-want)>.04) v.currentTime=want; } }
+function vsync(v,want){ if(!v||!v.duration)return; const end=v.duration-.05; want=Math.max(0,Math.min(end,want));
+  /* the video plays on its own clock; only small rate nudges keep it with the flow, hard seeks only on big drift */
+  if(playing&&want>0&&want<end){
+    if(v.paused){ if(!v.seeking&&Math.abs(v.currentTime-want)>.08) v.currentTime=want; v.play().catch(()=>{}); }
+    else { const d=want-v.currentTime; if(Math.abs(d)>.7&&!v.seeking){v.currentTime=want;v.playbackRate=1} else v.playbackRate=Math.max(.92,Math.min(1.08,1+d*.4)); } }
+  else { if(!v.paused)v.pause(); v.playbackRate=1; if(!v.seeking&&Math.abs(v.currentTime-want)>.04) v.currentTime=want; } }
 
 let raf=0;
 function play(){cancelAnimationFrame(raf);playing=true;t0=performance.now()-tNow*1000;raf=requestAnimationFrame(loop)}
