@@ -79,14 +79,13 @@ img{display:block}
 
 @font-face{font-family:Manrope;font-weight:400;src:url(fonts/manrope-latin-400-normal.woff2) format("woff2")}
 /* ---------- arrival ---------- */
-#arrive{position:absolute;inset:0;border-radius:25.45px;opacity:0;overflow:hidden;
-  background:linear-gradient(to bottom,rgba(64,112,255,0) 8%,rgba(64,112,255,.55) 55%,rgba(64,112,255,.95) 100%);
-  box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)}
-#arrive .chip{position:absolute;left:50%;top:20px;transform:translateX(-50%);display:flex;align-items:center;gap:6px;height:34px;padding:0 14px 0 11px;
-  border-radius:999px;background:rgba(0,0,0,.45);font:600 17px/1 Montserrat,sans-serif;color:#fff;white-space:nowrap}
-#arrive .ok{position:absolute;left:50%;top:132px;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:999px;background:#fff;
-  box-shadow:0 0 0 10px rgba(255,255,255,.18),0 0 28px rgba(255,255,255,.55)}
-#arrive .ok svg{position:absolute;inset:0}
+@font-face{font-family:Manrope;font-weight:700;src:url(fonts/manrope-latin-700-normal.woff2) format("woff2")}
+/* floor guidance card: base art + live chip (so distance can count down and switch to Arrived) */
+#fChip{position:absolute;left:50%;top:23.2px;transform:translateX(-50%);height:46.9px;padding:0 16.5px;display:flex;align-items:center;gap:8.3px;
+  border-radius:999px;background:#1c1c1c;font:700 22px/1 Manrope,sans-serif;color:#fff;white-space:nowrap}
+#fChip svg{width:20px;height:22px;flex:none}
+#fChip .ic{position:relative;width:20px;height:22px;flex:none}
+#fChip .ic svg{position:absolute;inset:0}
 /* ---------- scene D: at the pin (Figma 새로 추가1 → 2) ---------- */
 #sceneD{position:absolute;inset:0;visibility:hidden}
 #wall{position:absolute;left:0;top:0;width:1210px;height:887px;transform-origin:50% 40%}
@@ -171,9 +170,13 @@ img{display:block}
   </div>
   <!-- floor card lives beside the video (not inside sceneC) so its Figma screen blend has the footage to blend with -->
   <div id="floorWrap" style="position:absolute;left:473px;top:543px;width:264px;height:245px;mix-blend-mode:screen;opacity:0;visibility:hidden">
-    <img src="assets/floor.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="" id="floorImgR">
-    <div id="arrive"><div class="chip"><svg width="16" height="16" viewBox="0 0 16 16"><path d="M3.5 8.4l3 3 6-6.4" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>Arrived</div>
-      <div class="ok"><svg viewBox="0 0 76 76"><path d="M24 39.5l9.5 9.5L53 28.5" stroke="#3a64f0" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div></div>
+    <img src="assets/floor_plain.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="" id="floorImgR">
+    <img id="fArrow" src="assets/floor_base.png" alt="" style="position:absolute;left:0;top:0;width:264px;height:245px;border-radius:25.45px">
+    <div id="fChip"><span class="ic">
+      <svg id="icTurn" viewBox="0 0 20 22"><path d="M4 20V11.5Q4 7 8.5 7H15" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round"/><path d="M12 2.8L16.6 7 12 11.2" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg id="icUp" viewBox="0 0 20 22" style="opacity:0"><path d="M10 20V4M4.6 9.2L10 3.6l5.4 5.6" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <svg id="icOk" viewBox="0 0 20 22" style="opacity:0"><path d="M3.6 11.6l4.4 4.4 8.4-9" stroke="#fff" stroke-width="2.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+      <span id="fTxt">After 2.5m</span></div>
   </div>
   <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
   <div id="tap" class="abs touch"></div>
@@ -312,10 +315,17 @@ function apply(t){
   $('navBg').style.filter=`blur(${lerp(22,0,fz)}px)`; $('navBg').style.transform=`scale(${lerp(1.18,1,fz)})`;
   $('navV').style.filter='none'; $('navV').style.transform=$('navBg').style.transform; $('navBlur').style.transform=$('navBg').style.transform; $('navBlur').style.opacity=1-fz; $('navBlur').style.visibility=fz<1?'visible':'hidden'; vsync($('navV'),tc-C.ui[0]);   // hold the first frame through the focus pull; play once navigation is on
   const nOff=eio(prog(tc,...D.navOff)), arr=eout(prog(tc,D.arrive,D.arrive+.45));
+  /* guidance follows the walk: turn ahead while walking with the dog, then straight to the wall */
+  {const walk1=prog(tc,2.9,6.0), turned=tc>=D.swap[0]+.45, walk2=prog(tc,D.swap[0]+1.6,D.arrive);
+   let txt, ic;
+   if(tc>=D.arrive){txt='Arrived';ic='icOk'}
+   else if(!turned){txt=`After ${Math.max(.5,2.5-2.0*walk1).toFixed(1)}m`;ic='icTurn'}
+   else {txt=`${Math.max(1,Math.round(6-5*walk2))}m`;ic='icUp'}
+   if($('fTxt').textContent!==txt)$('fTxt').textContent=txt;
+   ['icTurn','icUp','icOk'].forEach(id=>$(id).style.opacity=id===ic?1:0);
+   $('fArrow').style.opacity=1-arr;}
   [...$('sceneC').children].forEach(el=>{if(el.id!=='navBg') el.style.opacity=ui*(1-nOff)});
   
-  $('floorImgR').style.opacity=1-arr; $('arrive').style.opacity=arr;
-  $('arrive').querySelector('.ok').style.transform=`scale(${arr<1?lerp(.5,1,eout(arr))*(1+.12*Math.sin(Math.PI*arr)):1})`;
   $('floorWrap').style.transform=`translateY(${(1-ui)*14}px)`; {const fo=ui*cIn*(1-nOff); $('floorWrap').style.opacity=fo; $('floorWrap').style.visibility=fo>0?'visible':'hidden';}
   $('nb').style.transform=`scale(${1-.04*Math.sin(Math.PI*prog(tc,C.tap,C.tap+.3))})`;
 
@@ -350,7 +360,7 @@ function apply(t){
 function fit(){if(CAPTURE)return;const s=Math.min(innerWidth/1210,innerHeight/834);$('vp').style.transform=`scale(${s})`}
 addEventListener('resize',fit);
 async function boot(){
-  try{await Promise.all(['400 12px Manrope','500 12px Manrope','600 12px Manrope','700 12px Montserrat','400 12px Montserrat','500 12px Montserrat'].map(f=>document.fonts.load(f)))}catch(e){}
+  try{await Promise.all(['700 12px Manrope','400 12px Manrope','500 12px Manrope','600 12px Manrope','700 12px Montserrat','400 12px Montserrat','500 12px Montserrat'].map(f=>document.fonts.load(f)))}catch(e){}
   await Promise.all([...document.images].map(i=>i.complete?0:new Promise(r=>{i.onload=i.onerror=r})));
   fit();apply(0);window.__ready=true;if(!CAPTURE&&!/[?&]embed/.test(location.search))setTimeout(play,500);
 }
