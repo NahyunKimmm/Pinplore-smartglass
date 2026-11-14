@@ -188,6 +188,10 @@ img{display:block}
 </div>
 <script>
 const $=id=>document.getElementById(id);
+/* navigation header: knob + destination pill centred as one group on the stage (pill width follows its text) */
+function centerNavHead(){const p=$('pillC');if(!p)return;const kn=[...$('sceneC').children].filter(e=>e.style.left==='469px'||e.dataset.knob);
+  const w=p.offsetWidth;if(!w)return;const x=605-(63+10+w)/2;kn.forEach(e=>{e.dataset.knob=1;e.style.left=x+'px';});p.style.left=(x+73)+'px';}
+addEventListener('load',centerNavHead);document.fonts&&document.fonts.ready.then(centerNavHead);
 const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
 const lerp=(a,b,k)=>a+(b-a)*k;
 const prog=(t,a,b)=>clamp((t-a)/(b-a));
