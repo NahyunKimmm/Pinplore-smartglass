@@ -317,7 +317,7 @@ function apply(t){
    $('wall').style.filter=sw<1?`blur(${lerp(14,0,sw)}px)`:'none'; const dy=53*lk;
    $('wall').style.transform=`translate(0px,${-53+dy}px) scale(${lerp(1.06,1,sw)})`;
    $('navV').style.visibility=sw>=1?'hidden':'visible';
-   WP.forEach((p,i)=>{const k=i===0?eout(prog(tc,D.swap[0]+.5,D.swap[1]+.2)):eout(prog(tc,D.pins+i*.09,D.pins+.35+i*.09)), o=(i===0?1:lerp(p.op,.5,lk))*k;
+   WP.forEach((p,i)=>{const k=eout(prog(tc,D.swap[0]+.5+i*.09,D.swap[1]+.2+i*.09))   /* all pins are part of the place: they arrive with it */, o=(i===0?1:lerp(p.op,.5,lk))*k;
      /* destination pin: a slow, slight breathing pulse until it's tapped */
      const br=i===0?(1-prog(tc,D.tap,D.tap+.25))*k*(.5-.5*Math.cos(2*Math.PI*Math.max(0,tc-D.swap[0])/1.15)):0;
      wpEls[i].forEach(el=>{el.style.opacity=o;tr(el,p.x,p.y+dy,` scale(${lerp(.6,1,k)*(1+.07*br)})`)});
