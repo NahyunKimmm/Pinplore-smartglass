@@ -178,9 +178,9 @@ img{display:block}
     <img src="assets/floor_plain.png" style="width:264px;height:245px;border-radius:25.45px;box-shadow:inset 0 0 0 2px rgba(255,255,255,.2)" alt="" id="floorImgR">
     <img id="fArrow" src="assets/floor_base.png" alt="" style="position:absolute;left:0;top:0;width:264px;height:245px;border-radius:25.45px">
     <div id="fChip"><span class="ic">
-      <svg id="icTurn" viewBox="0 0 20 23" style="opacity:0"><path d="M2.755 18.7435V6.08789H13.4636" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.3047 6.08789L9.56958 0.467324V11.7085L19.3047 6.08789Z" fill="#fff"/></svg>
-      <svg id="icUp" viewBox="0 0 20 23"><path d="M9.65 21.3V9.4" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" fill="none"/><path d="M9.65 0.8L3.95 10.6H15.35Z" fill="#fff"/></svg></span>
-      <span id="fTxt">1.2km</span></div>
+      <svg id="icTurn" viewBox="0 0 20 23"><path d="M2.755 18.7435V6.08789H13.4636" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.3047 6.08789L9.56958 0.467324V11.7085L19.3047 6.08789Z" fill="#fff"/></svg>
+      <svg id="icUp" viewBox="0 0 20 23" style="opacity:0;transform:scaleX(-1)"><path d="M2.755 18.7435V6.08789H13.4636" stroke="#fff" stroke-width="2.92053" stroke-linecap="round" stroke-linejoin="round" fill="none"/><path d="M19.3047 6.08789L9.56958 0.467324V11.7085L19.3047 6.08789Z" fill="#fff"/></svg></span>
+      <span id="fTxt">After 1.2km</span></div>
   </div>
   <div id="headS" class="abs"></div><img id="head" class="abs" src="assets/headRoute.png" alt="">
   <div id="tap" class="abs touch"></div>
@@ -322,8 +322,8 @@ function apply(t){
   /* guidance follows the walk: turn ahead while walking with the dog, then straight to the wall */
   {const walk1=prog(tc,2.9,6.0), turned=tc>=D.swap[0]+.45, walk2=prog(tc,D.swap[0]+1.6,D.arrive);
    let txt, ic;
-   if(!turned){txt=`${(1.2-.1*walk1).toFixed(1)}km`;ic='icUp'}            // setting off: the whole 1.2km route
-   else {txt=`${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic='icUp'}            // after the cut: the last 0.5m to the wall
+   if(!turned){txt=`After ${(1.2-.1*walk1).toFixed(1)}km`;ic='icTurn'}   // next manoeuvre: turn right in 1.2km
+   else {txt=`After ${Math.max(.1,.5-.4*walk2).toFixed(1)}m`;ic='icUp'}   // after the cut: turn left at the wall in 0.5m (icUp = left-turn icon)
    if($('fTxt').textContent!==txt)$('fTxt').textContent=txt;
    ['icTurn','icUp'].forEach(id=>$(id).style.opacity=id===ic?1:0);
    const ac=eout(prog(tc,D.arrive+.2,D.arrive+.65))*(1-nOff), aw=$('arrWrap');
